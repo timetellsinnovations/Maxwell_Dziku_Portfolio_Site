@@ -30,13 +30,14 @@ const About: React.FC = () => {
                         />
                         <div className="absolute inset-0 bg-lime-400/20 mix-blend-overlay group-hover:bg-transparent transition-all"></div>
                     </div>
+                     {/* STATUS BADGE: Changed from 'Open to Work' to 'Always Building' to signal active expertise without desperation */}
                      <motion.div 
-                        className="absolute -bottom-2 -right-2 bg-black text-lime-400 text-xs font-bold px-3 py-1 rounded-full border border-lime-400"
+                        className="absolute -bottom-2 -right-2 bg-black text-lime-400 text-[10px] md:text-xs font-bold px-3 py-1 rounded-full border border-lime-400 whitespace-nowrap shadow-lg shadow-lime-400/20"
                         initial={{ opacity: 0, scale: 0.8 }}
                         whileInView={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.5 }}
                      >
-                        HIRE ME
+                        ALWAYS BUILDING
                      </motion.div>
                 </div>
                 
@@ -108,7 +109,8 @@ const About: React.FC = () => {
 
         {/* Experience Timeline Visualized */}
         <div className="mt-32 relative">
-          <div className="absolute left-[15px] top-0 bottom-0 w-[1px] bg-neutral-800 md:left-1/2 md:-ml-[0.5px]"></div>
+          {/* Vertical Line - Fixed alignment on mobile */}
+          <div className="absolute left-[19px] top-0 bottom-0 w-[1px] bg-neutral-800 md:left-1/2 md:-ml-[0.5px]"></div>
           
           <div className="text-center mb-16 relative z-10">
             <span className="bg-neutral-900 px-4 text-2xl font-mono text-lime-400 uppercase tracking-widest">Career Trajectory</span>
@@ -119,16 +121,16 @@ const About: React.FC = () => {
               <div key={job.id} className={`relative grid md:grid-cols-2 gap-8 items-center ${idx % 2 === 0 ? 'md:text-right' : 'md:text-left'}`}>
                 
                 {/* Dot on Timeline */}
-                <div className="absolute left-[11px] md:left-1/2 md:-ml-[5px] w-[9px] h-[9px] rounded-full bg-lime-400 border-2 border-black z-10"></div>
+                <div className="absolute left-[15px] md:left-1/2 md:-ml-[5px] w-[9px] h-[9px] rounded-full bg-lime-400 border-2 border-black z-10 shadow-[0_0_10px_rgba(163,230,53,0.5)]"></div>
 
                 {/* Left Side (Content for Even, Empty for Odd on Desktop) */}
-                <div className={`${idx % 2 === 0 ? 'md:pr-12' : 'md:col-start-2 md:pl-12'} pl-12 md:pl-0`}>
+                <div className={`${idx % 2 === 0 ? 'md:pr-12' : 'md:col-start-2 md:pl-12'} pl-16 md:pl-0`}>
                    <div className="group">
                         <span className="text-xl font-bold text-white block mb-1 group-hover:text-lime-400 transition-colors">{job.period}</span>
                         <span className="text-sm text-lime-400 font-mono uppercase mb-4 block tracking-wider">{job.company}</span>
                         <h4 className="text-2xl font-bold mb-3 text-white">{job.role}</h4>
                         <p className="text-neutral-400 mb-4 leading-relaxed text-sm md:text-base">{job.description}</p>
-                        <div className={`flex flex-wrap gap-2 ${idx % 2 === 0 ? 'md:justify-end' : 'md:justify-start'}`}>
+                        <div className={`flex flex-wrap gap-2 ${idx % 2 === 0 ? 'md:justify-end justify-start' : 'justify-start'}`}>
                             {job.skills.map(skill => (
                             <span key={skill} className="text-xs border border-neutral-700 bg-neutral-950 px-3 py-1 rounded-full text-neutral-300 hover:border-lime-400 transition-colors cursor-default">
                                 {skill}

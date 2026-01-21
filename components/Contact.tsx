@@ -80,8 +80,11 @@ const Contact: React.FC = () => {
                         <input 
                             type="text" 
                             id="name" 
+                            name="name"
+                            inputMode="text"
+                            autoComplete="name"
                             required
-                            className="bg-neutral-50 border-b-2 border-neutral-200 p-3 text-lg font-medium focus:outline-none focus:border-black transition-colors placeholder:text-neutral-300"
+                            className="bg-neutral-50 border-b-2 border-neutral-200 p-3 text-lg font-medium focus:outline-none focus:border-black focus:bg-white transition-all placeholder:text-neutral-300"
                             placeholder="Jane Doe"
                         />
                     </div>
@@ -89,9 +92,12 @@ const Contact: React.FC = () => {
                         <label htmlFor="email" className="text-xs font-bold uppercase tracking-widest text-neutral-500">Email</label>
                         <input 
                             type="email" 
-                            id="email" 
+                            id="email"
+                            name="email"
+                            inputMode="email"
+                            autoComplete="email" 
                             required
-                            className="bg-neutral-50 border-b-2 border-neutral-200 p-3 text-lg font-medium focus:outline-none focus:border-black transition-colors placeholder:text-neutral-300"
+                            className="bg-neutral-50 border-b-2 border-neutral-200 p-3 text-lg font-medium focus:outline-none focus:border-black focus:bg-white transition-all placeholder:text-neutral-300"
                             placeholder="jane@company.com"
                         />
                     </div>
@@ -99,9 +105,10 @@ const Contact: React.FC = () => {
                         <label htmlFor="message" className="text-xs font-bold uppercase tracking-widest text-neutral-500">Message</label>
                         <textarea 
                             id="message" 
+                            name="message"
                             required
                             rows={4}
-                            className="bg-neutral-50 border-b-2 border-neutral-200 p-3 text-lg font-medium focus:outline-none focus:border-black transition-colors placeholder:text-neutral-300 resize-none"
+                            className="bg-neutral-50 border-b-2 border-neutral-200 p-3 text-lg font-medium focus:outline-none focus:border-black focus:bg-white transition-all placeholder:text-neutral-300 resize-none"
                             placeholder="Tell me about your project..."
                         ></textarea>
                     </div>
@@ -109,7 +116,7 @@ const Contact: React.FC = () => {
                     <button 
                         type="submit" 
                         disabled={formState === 'submitting'}
-                        className="bg-black text-white py-4 px-8 font-bold uppercase tracking-widest hover:bg-neutral-800 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-3 mt-4"
+                        className="bg-black text-white py-4 px-8 font-bold uppercase tracking-widest hover:bg-neutral-800 transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-3 mt-4 focus:outline-none focus:ring-4 focus:ring-lime-500/50"
                     >
                         {formState === 'submitting' ? (
                             <>Sending <Loader2 size={18} className="animate-spin" /></>

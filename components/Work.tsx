@@ -50,7 +50,8 @@ const Work: React.FC = () => {
                 className="w-full h-full object-cover aspect-[4/3] transition-transform duration-700 group-hover:scale-105 filter grayscale group-hover:grayscale-0"
               />
               <div className="absolute top-4 right-4 z-20 overflow-hidden">
-                 <span className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                 {/* Mobile Fix: Button is always visible on mobile (translate-y-0) and only animates on desktop (md:translate-y-full) */}
+                 <span className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest translate-y-0 md:translate-y-full group-hover:translate-y-0 transition-transform duration-300 shadow-xl">
                    View Case Study <ArrowUpRight size={14} />
                  </span>
               </div>

@@ -96,15 +96,15 @@ const Navbar: React.FC = () => {
   return (
     <>
       <header 
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 mix-blend-difference text-white ${
-          isScrolled ? 'py-4' : 'py-8'
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 text-white ${
+          isScrolled ? 'py-4 bg-neutral-950/80 backdrop-blur-md border-b border-white/5' : 'py-8 bg-transparent'
         }`}
       >
         <div className="px-6 md:px-12 flex justify-between items-center">
           <a 
             href="#" 
             onClick={scrollToTop}
-            className="text-2xl font-bold tracking-tighter uppercase font-oswald border-2 border-white px-2 py-1 hover:bg-white hover:text-black transition-colors focus-visible:ring-2 focus-visible:ring-lime-400 focus-visible:outline-none"
+            className={`text-2xl font-bold tracking-tighter uppercase font-oswald border-2 border-white px-2 py-1 hover:bg-white hover:text-black transition-colors focus-visible:ring-2 focus-visible:ring-lime-400 focus-visible:outline-none ${!isScrolled && 'mix-blend-difference'}`}
             aria-label="Scroll to top"
           >
             MD.
@@ -112,7 +112,7 @@ const Navbar: React.FC = () => {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
-            <nav className="flex gap-8 items-center">
+            <nav className={`flex gap-8 items-center ${!isScrolled && 'mix-blend-difference'}`}>
               {NAV_LINKS.map((link) => {
                 const isActive = activeSection === link.href.substring(1);
                 return (
@@ -132,7 +132,7 @@ const Navbar: React.FC = () => {
               href={SOCIAL_LINKS.resume} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="px-5 py-2 text-xs font-bold uppercase tracking-widest border border-white/30 hover:bg-lime-400 hover:border-lime-400 hover:text-black transition-all flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-lime-400 focus-visible:outline-none"
+              className={`px-5 py-2 text-xs font-bold uppercase tracking-widest border border-white/30 hover:bg-lime-400 hover:border-lime-400 hover:text-black transition-all flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-lime-400 focus-visible:outline-none ${!isScrolled && 'mix-blend-difference'}`}
             >
               <FileText size={14} /> Resume
             </a>
@@ -140,7 +140,7 @@ const Navbar: React.FC = () => {
 
           {/* Mobile Menu Toggle */}
           <button 
-            className="md:hidden p-2 focus-visible:ring-2 focus-visible:ring-lime-400 focus-visible:outline-none rounded hover:text-lime-400 transition-colors"
+            className={`md:hidden p-2 focus-visible:ring-2 focus-visible:ring-lime-400 focus-visible:outline-none rounded hover:text-lime-400 transition-colors ${!isScrolled && 'mix-blend-difference'}`}
             onClick={() => setIsOpen(true)}
             aria-label="Open Menu"
           >
@@ -157,7 +157,7 @@ const Navbar: React.FC = () => {
             animate="open"
             exit="closed"
             variants={menuVariants}
-            className="fixed inset-0 bg-neutral-950 z-[60] flex flex-col items-center justify-center"
+            className="fixed inset-0 bg-neutral-950/95 backdrop-blur-xl z-[60] flex flex-col items-center justify-center"
           >
             <button 
               className="absolute top-8 right-6 text-white p-4 focus-visible:ring-2 focus-visible:ring-lime-400 focus-visible:outline-none rounded hover:text-lime-400 transition-colors"

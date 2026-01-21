@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 
 interface MarqueeProps {
   text: string;
@@ -10,26 +9,32 @@ interface MarqueeProps {
 const Marquee: React.FC<MarqueeProps> = ({ text, direction = 'left', className = '' }) => {
   return (
     <div className={`overflow-hidden whitespace-nowrap flex ${className}`}>
-      <motion.div
-        className="flex min-w-full"
-        animate={{
-          x: direction === 'left' ? ["0%", "-50%"] : ["-50%", "0%"],
-        }}
-        transition={{
-          repeat: Infinity,
-          ease: "linear",
-          duration: 20,
+      {/* Container that moves */}
+      <div 
+        className="flex min-w-full animate-marquee"
+        style={{
+            animationDirection: direction === 'right' ? 'reverse' : 'normal'
         }}
       >
         {/* We duplicate the text enough times to ensure it covers screens of all sizes */}
-        {[...Array(4)].map((_, i) => (
+        {[...Array(6)].map((_, i) => (
           <span key={i} className="mx-4 text-6xl md:text-9xl font-bold uppercase opacity-30 hover:opacity-100 transition-opacity duration-300 font-oswald text-transparent stroke-text whitespace-nowrap">
             {text} <span className="text-lime-400 mx-4">•</span>
           </span>
         ))}
-      </motion.div>
-      {/* CSS for outlined text effect */}
+      </div>
+      
+      {/* CSS for Animation & Outlined Text */}
       <style>{`
+        @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+            animation: marquee 30s linear infinite;
+            /* Critical for mobile performance */
+            will-change: transform; 
+        }
         .stroke-text {
           -webkit-text-stroke: 1px #666;
         }
