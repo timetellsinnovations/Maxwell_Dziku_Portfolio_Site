@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Chat } from "@google/genai";
 import { PROJECTS, EXPERIENCE, SERVICES, SOCIAL_LINKS } from '../constants';
 import { MessageCircle, X, Send, Bot, User, Minimize2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -14,10 +14,13 @@ const ChatBot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'model', text: "Hi! I'm Maxwell's AI Assistant. Ask me anything about his projects, experience, or skills." }
+    { role: 'model', text: "Hi! I'm Maxwell's AI Assistant. I can tell you how he bridges the gap between Instructional Design and Software Engineering. Ask me anything!" }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Use a ref to persist the chat session across renders without re-initializing
+  const chatSessionRef = useRef<Chat | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Scroll to bottom of chat
@@ -27,7 +30,47 @@ const ChatBot: React.FC = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isOpen]);
+  }, [messages, isOpen, isLoading]);
+
+  const getChatSession = () => {
+    if (!chatSessionRef.current) {
+        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+        
+        // Construct context from portfolio data
+        const contextData = {
+            projects: PROJECTS,
+            experience: EXPERIENCE,
+            services: SERVICES,
+            socials: SOCIAL_LINKS
+        };
+
+        const systemInstruction = `You are the AI portfolio assistant for Maxwell Dziku, a specialized Learning Engineer & Automation Architect.
+        
+        Your Core Persona:
+        You represent a unique convergence of three disciplines:
+        1. Instructional Design (Adult learning theory, ADDIE, Bloom's Taxonomy)
+        2. Full-Stack Web Development (React, Node.js, Next.js, TypeScript)
+        3. Workflow Automation (Python, Zapier, APIs, AI Agents)
+
+        Your goal is to answer visitor questions using the provided JSON data: ${JSON.stringify(contextData)}.
+
+        Communication Guidelines:
+        - **The Hybrid Edge**: When asked about Maxwell's skills, emphasize that he doesn't just design courses—he builds the engines that run them. He moves beyond "click-next" eLearning to create immersive web apps and automated learning ecosystems.
+        - **Project Context**: When discussing projects like 'AI Training Coach' or 'Gamified ID Portfolio', highlight them as proof of this hybrid skillset.
+        - **Tone**: Professional, innovative, and concise (keep answers under 4 sentences unless asked for depth).
+        - **Contact**: If specific availability or rates are requested, guide them to the 'Contact' section.
+        - **Unknowns**: If the data doesn't contain the answer, politely suggest contacting Maxwell directly. Do not make up information.
+        `;
+
+        chatSessionRef.current = ai.chats.create({
+            model: 'gemini-3-pro-preview',
+            config: {
+                systemInstruction: systemInstruction,
+            },
+        });
+    }
+    return chatSessionRef.current;
+  };
 
   const handleSendMessage = async (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -39,42 +82,18 @@ const ChatBot: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      
-      // Construct context from portfolio data
-      const contextData = {
-        projects: PROJECTS,
-        experience: EXPERIENCE,
-        services: SERVICES,
-        socials: SOCIAL_LINKS
-      };
-
-      const systemInstruction = `You are a helpful, professional, and tech-savvy AI assistant for Maxwell Dziku's portfolio website. 
-      Your goal is to answer visitor questions about Maxwell based on the following JSON data: ${JSON.stringify(contextData)}.
-      
-      Guidelines:
-      1. Keep answers concise (under 3-4 sentences) unless asked for details.
-      2. Be friendly but professional. Use a tone that reflects a "Learning Engineer & Automation Architect".
-      3. If asked about contact info, refer to the contact section or provided links.
-      4. If you don't know the answer based on the data, suggest they contact Maxwell directly via the form.
-      5. Do not hallucinate skills or experience not listed in the data.
-      6. Maxwell bridges the gap between Instructional Design and Software Engineering. Emphasize this unique hybrid skill set.
-      `;
-
-      const response = await ai.models.generateContent({
-        model: 'gemini-3-pro-preview',
-        contents: userMessage,
-        config: {
-          systemInstruction: systemInstruction,
-        },
+      const chat = getChatSession();
+      const response = await chat.sendMessage({
+        message: userMessage,
       });
 
       const text = response.text || "I'm sorry, I couldn't process that request right now.";
-      
       setMessages(prev => [...prev, { role: 'model', text }]);
     } catch (error) {
       console.error("Chat error:", error);
       setMessages(prev => [...prev, { role: 'model', text: "I encountered an error connecting to the AI. Please try again later." }]);
+      // Reset session on error to clear potential bad state
+      chatSessionRef.current = null;
     } finally {
       setIsLoading(false);
     }
@@ -153,15 +172,29 @@ const ChatBot: React.FC = () => {
                   </div>
                 </div>
               ))}
+              
+              {/* Typing Indicator */}
               {isLoading && (
                 <div className="flex gap-3">
                    <div className="w-8 h-8 rounded-full bg-lime-400 text-black flex items-center justify-center shrink-0">
                     <Bot size={16} />
                   </div>
                   <div className="bg-neutral-950 border border-neutral-800 p-3 rounded-2xl rounded-tl-none flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 bg-neutral-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                    <span className="w-1.5 h-1.5 bg-neutral-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                    <span className="w-1.5 h-1.5 bg-neutral-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                    <motion.span 
+                      className="w-1.5 h-1.5 bg-neutral-500 rounded-full"
+                      animate={{ y: [0, -5, 0] }}
+                      transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
+                    />
+                    <motion.span 
+                      className="w-1.5 h-1.5 bg-neutral-500 rounded-full"
+                      animate={{ y: [0, -5, 0] }}
+                      transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }}
+                    />
+                    <motion.span 
+                      className="w-1.5 h-1.5 bg-neutral-500 rounded-full"
+                      animate={{ y: [0, -5, 0] }}
+                      transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }}
+                    />
                   </div>
                 </div>
               )}
