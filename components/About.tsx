@@ -5,7 +5,9 @@ import { motion } from 'framer-motion';
 import { Palette, Terminal, Workflow, ArrowUpRight, Database } from 'lucide-react';
 
 const About: React.FC = () => {
-  const [imgSrc, setImgSrc] = useState("https://photos.fife.usercontent.google.com/pw/AP1GczMWDTIQL0AAHEsqhOnGRdugsYj4LMWrJQslQDU8c-B50jzcGAMsZQJUbw=w1024-h1024-s-no-gm?authuser=1");
+  // DIRECTION: Create a 'public/assets' folder in your repo and upload your photo named 'profile.jpg'
+  // If the file is not found, it will fallback to the avatar generator.
+  const [imgSrc, setImgSrc] = useState("/assets/profile.jpg");
 
   return (
     <div className="bg-neutral-900 text-neutral-200">
@@ -18,7 +20,7 @@ const About: React.FC = () => {
             <div className="flex flex-col gap-6">
                 <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-2 border-lime-400 p-1 relative group cursor-pointer shrink-0">
                     <div className="w-full h-full rounded-full overflow-hidden relative bg-neutral-800">
-                         {/* Fallback enabled image */}
+                         {/* Image with fallback */}
                          <img 
                             src={imgSrc} 
                             onError={() => setImgSrc("https://ui-avatars.com/api/?name=Maxwell+Dziku&background=a3e635&color=000&size=512")}

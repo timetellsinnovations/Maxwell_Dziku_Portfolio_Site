@@ -9,7 +9,7 @@ const Testimonials: React.FC = () => {
     <Section id="reviews" className="bg-neutral-950 border-t border-neutral-900">
         <div className="mb-16 text-center md:text-left">
             <h2 className="text-4xl md:text-6xl font-bold uppercase text-white font-syne mb-4">
-                What Our <br/><span className="text-lime-400">Clients Say</span>
+                Client <br/><span className="text-lime-400">Feedback</span>
             </h2>
             <p className="text-neutral-400 text-lg max-w-2xl">
                 Real feedback from leading organizations who trust our services to deliver high-impact learning solutions.
