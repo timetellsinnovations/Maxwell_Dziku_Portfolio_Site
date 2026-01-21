@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenAI, Chat } from "@google/genai";
 import { PROJECTS, EXPERIENCE, SERVICES, SOCIAL_LINKS } from '../constants';
-import { MessageCircle, X, Send, Bot, User, Minimize2 } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, User, Minimize2, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Initialize types for messages
@@ -34,6 +34,9 @@ const ChatBot: React.FC = () => {
 
   const getChatSession = () => {
     if (!chatSessionRef.current) {
+        if (!process.env.API_KEY) {
+            throw new Error("API Key is missing");
+        }
         const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
         
         // Construct context from portfolio data
@@ -91,7 +94,11 @@ const ChatBot: React.FC = () => {
       setMessages(prev => [...prev, { role: 'model', text }]);
     } catch (error) {
       console.error("Chat error:", error);
-      setMessages(prev => [...prev, { role: 'model', text: "I encountered an error connecting to the AI. Please try again later." }]);
+      let errorMsg = "I encountered an error connecting to the AI. Please try again later.";
+      if ((error as Error).message.includes("API Key")) {
+         errorMsg = "System Error: API Key is missing. Please contact the site administrator.";
+      }
+      setMessages(prev => [...prev, { role: 'model', text: errorMsg }]);
       // Reset session on error to clear potential bad state
       chatSessionRef.current = null;
     } finally {
@@ -101,7 +108,7 @@ const ChatBot: React.FC = () => {
 
   return (
     <>
-      {/* Toggle Button */}
+      {/* Toggle Button - High Z-Index to ensure visibility */}
       <motion.button
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
@@ -111,7 +118,7 @@ const ChatBot: React.FC = () => {
             setIsOpen(true);
             setIsMinimized(false);
         }}
-        className={`fixed bottom-6 right-6 z-50 w-14 h-14 bg-lime-400 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(163,230,53,0.4)] text-black focus:outline-none focus:ring-4 focus:ring-white/50 ${isOpen && !isMinimized ? 'hidden' : 'flex'}`}
+        className={`fixed bottom-6 right-6 z-[999] w-14 h-14 bg-lime-400 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(163,230,53,0.4)] text-black focus:outline-none focus:ring-4 focus:ring-white/50 ${isOpen && !isMinimized ? 'hidden' : 'flex'}`}
         aria-label="Open Chat"
       >
         <MessageCircle size={28} fill="currentColor" />
@@ -125,7 +132,7 @@ const ChatBot: React.FC = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.95 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed bottom-6 right-6 z-50 w-[90vw] md:w-[400px] h-[500px] bg-neutral-900 border border-neutral-700 rounded-xl shadow-2xl flex flex-col overflow-hidden font-inter"
+            className="fixed bottom-6 right-6 z-[999] w-[90vw] md:w-[400px] h-[500px] bg-neutral-900 border border-neutral-700 rounded-xl shadow-2xl flex flex-col overflow-hidden font-inter"
           >
             {/* Header */}
             <div className="bg-neutral-950 p-4 border-b border-neutral-800 flex justify-between items-center">
