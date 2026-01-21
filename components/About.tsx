@@ -5,9 +5,9 @@ import { motion } from 'framer-motion';
 import { Palette, Terminal, Workflow, ArrowUpRight, Database } from 'lucide-react';
 
 const About: React.FC = () => {
-  // DIRECTION: Create a 'public/assets' folder in your repo and upload your photo named 'profile.jpg'
-  // If the file is not found, it will fallback to the avatar generator.
-  const [imgSrc, setImgSrc] = useState("/assets/profile.jpg");
+  // DIRECTION: Create a 'public/assets' folder in your repo and upload your photo named 'profile.JPG'
+  // Note: Vercel is case-sensitive! Ensure the extension matches exactly (.JPG vs .jpg).
+  const [imgSrc, setImgSrc] = useState("/assets/profile.JPG");
 
   return (
     <div className="bg-neutral-900 text-neutral-200">
