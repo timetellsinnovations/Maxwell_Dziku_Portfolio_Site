@@ -1,11 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import Section from './ui/Section';
 import { GoogleGenAI } from "@google/genai";
-import { Sparkles, ArrowRight, BookOpen, Target, BrainCircuit, Loader2, Languages, Repeat, CheckCircle2, Calculator, TrendingUp, DollarSign, Users, Clock } from 'lucide-react';
+import { Sparkles, ArrowRight, BookOpen, Target, BrainCircuit, Loader2, Languages, Repeat, CheckCircle2, Calculator, TrendingUp, DollarSign, Users, Clock, MessageSquare, AlertTriangle, Lightbulb } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AiPlayground: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'objectives' | 'jargon' | 'roi'>('objectives');
+  const [activeTab, setActiveTab] = useState<'objectives' | 'jargon' | 'roi' | 'feedback'>('objectives');
   
   // Objectives State
   const [topic, setTopic] = useState('');
@@ -26,6 +26,12 @@ const AiPlayground: React.FC = () => {
     hoursSaved: 5,
     devCost: 5000
   });
+
+  // Feedback Analysis State
+  const [feedbackInput, setFeedbackInput] = useState('');
+  const [feedbackResult, setFeedbackResult] = useState<any>(null);
+  const [isFeedbackLoading, setIsFeedbackLoading] = useState(false);
+  const [feedbackError, setFeedbackError] = useState('');
 
   // ROI Derived State
   const roiMetrics = useMemo(() => {
@@ -130,6 +136,59 @@ const AiPlayground: React.FC = () => {
     }
   };
 
+  const generateFeedbackAnalysis = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!feedbackInput.trim()) return;
+
+      setIsFeedbackLoading(true);
+      setFeedbackError('');
+      setFeedbackResult(null);
+
+      try {
+          const apiKey = process.env.API_KEY;
+          if (!apiKey) throw new Error("System Error: API Key missing.");
+
+          const ai = new GoogleGenAI({ apiKey });
+
+          const prompt = `Act as a Lead L&D Data Analyst. Analyze the following learner feedback.
+          
+          Input: "${feedbackInput}"
+          
+          Return ONLY a raw JSON object with this structure: 
+          { 
+            "sentiment": "Positive" | "Neutral" | "Negative", 
+            "keyIssues": ["issue 1", "issue 2"], 
+            "suggestedActions": ["action 1", "action 2"] 
+          }
+          No markdown.`;
+
+          const response = await ai.models.generateContent({
+              model: 'gemini-3-flash-preview',
+              contents: prompt
+          });
+
+          const text = response.text || "{}";
+          const cleanJson = text.replace(/```json/g, '').replace(/```/g, '').trim();
+
+          try {
+              const parsed = JSON.parse(cleanJson);
+              setFeedbackResult(parsed);
+          } catch (e) {
+              setFeedbackError("Could not analyze feedback format.");
+          }
+
+      } catch (err: any) {
+          console.error(err);
+          if (err.message?.includes("429")) {
+              setFeedbackError("Quota exceeded. Please wait 30s.");
+          } else {
+              setFeedbackError("Something went wrong.");
+          }
+      } finally {
+          setIsFeedbackLoading(false);
+      }
+  };
+
   const handleRoiChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setRoiInputs(prev => ({
@@ -148,7 +207,7 @@ const AiPlayground: React.FC = () => {
                 The <span className="text-lime-400">Hybrid</span> <br/> Advantage
             </h2>
             <p className="text-neutral-400 text-lg leading-relaxed max-w-2xl">
-                I build tools that automate the heavy lifting in L&D and Tech. Switch between the demos below to see how I bridge the gap between Instructional Design, Code, and Business Strategy.
+                I build tools that leverage <strong>Generative AI</strong> and <strong>Code</strong> to automate the heavy lifting in L&D. Switch between the demos below to see how I bridge the gap between Instructional Design, Full-Stack Dev, and Business Strategy.
             </p>
         </div>
 
@@ -174,6 +233,13 @@ const AiPlayground: React.FC = () => {
             >
                 <Calculator size={16} /> ROI Calc
                 {activeTab === 'roi' && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-400" />}
+            </button>
+             <button 
+                onClick={() => setActiveTab('feedback')}
+                className={`pb-4 text-sm font-bold uppercase tracking-widest transition-colors relative whitespace-nowrap flex items-center gap-2 ${activeTab === 'feedback' ? 'text-lime-400' : 'text-neutral-500 hover:text-white'}`}
+            >
+                <MessageSquare size={16} /> Feedback AI
+                {activeTab === 'feedback' && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-400" />}
             </button>
         </div>
 
@@ -300,6 +366,37 @@ const AiPlayground: React.FC = () => {
                         </form>
                     </motion.div>
                 )}
+
+                 {activeTab === 'feedback' && (
+                    <motion.div 
+                        key="feedback-input"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                         transition={{ duration: 0.3 }}
+                    >
+                         <div className="mb-6">
+                             <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">Feedback Analyzer</h3>
+                             <p className="text-neutral-400 text-sm">Paste learner feedback, and I'll extract sentiment and action items. Demonstrates <strong>Automation</strong> and <strong>Data Analysis</strong>.</p>
+                        </div>
+                        <form onSubmit={generateFeedbackAnalysis} className="flex flex-col gap-4">
+                            <textarea 
+                                value={feedbackInput}
+                                onChange={(e) => setFeedbackInput(e.target.value)}
+                                placeholder="e.g. 'The simulation was great, but the quiz questions were confusing and I couldn't find the resource link...'"
+                                className="w-full h-40 bg-neutral-950 border border-neutral-700 text-white rounded-lg p-4 focus:border-lime-400 focus:outline-none transition-colors resize-none placeholder:text-neutral-600"
+                            />
+                            <button 
+                                type="submit" 
+                                disabled={isFeedbackLoading || !feedbackInput.trim()}
+                                className="self-start bg-lime-400 text-black px-6 py-3 rounded font-bold uppercase text-xs tracking-widest hover:bg-lime-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                            >
+                                {isFeedbackLoading ? <Loader2 size={16} className="animate-spin" /> : <>Analyze <ArrowRight size={16} /></>}
+                            </button>
+                        </form>
+                         {feedbackError && <p className="text-red-400 text-sm mt-3 flex items-center gap-2"><BrainCircuit size={14}/> {feedbackError}</p>}
+                    </motion.div>
+                )}
             </AnimatePresence>
             </div>
 
@@ -420,6 +517,65 @@ const AiPlayground: React.FC = () => {
                              </div>
                         </div>
                     </motion.div>
+                 )}
+
+                 {/* Feedback Results */}
+                 {activeTab === 'feedback' && (
+                     <>
+                        {!isFeedbackLoading && !feedbackResult && !feedbackError && (
+                            <div className="text-center text-neutral-600">
+                                <MessageSquare size={48} className="mx-auto mb-4 opacity-20" />
+                                <p className="uppercase tracking-widest text-sm">Waiting for feedback...</p>
+                            </div>
+                        )}
+                        {isFeedbackLoading && (
+                             <div className="space-y-4">
+                                <div className="h-4 bg-neutral-800 rounded w-1/3 animate-pulse"></div>
+                                <div className="h-20 bg-neutral-800 rounded w-full animate-pulse"></div>
+                                <div className="h-20 bg-neutral-800 rounded w-full animate-pulse"></div>
+                            </div>
+                        )}
+                        {feedbackResult && (
+                             <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="space-y-6"
+                             >
+                                <div className="flex items-center gap-4">
+                                    <div className={`px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest ${
+                                        feedbackResult.sentiment === 'Positive' ? 'bg-lime-400 text-black' : 
+                                        feedbackResult.sentiment === 'Negative' ? 'bg-red-500 text-white' : 
+                                        'bg-neutral-600 text-white'
+                                    }`}>
+                                        {feedbackResult.sentiment}
+                                    </div>
+                                    <span className="text-neutral-500 text-xs font-mono">Sentiment Detected</span>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-white font-mono uppercase text-xs tracking-widest mb-3 flex items-center gap-2">
+                                        <AlertTriangle size={14} className="text-yellow-500"/> Key Issues
+                                    </h4>
+                                    <ul className="space-y-2">
+                                        {feedbackResult.keyIssues.map((issue: string, i: number) => (
+                                            <li key={i} className="text-neutral-300 text-sm bg-neutral-900 p-2 rounded border-l-2 border-yellow-500">{issue}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-white font-mono uppercase text-xs tracking-widest mb-3 flex items-center gap-2">
+                                        <Lightbulb size={14} className="text-lime-400"/> Suggested Actions
+                                    </h4>
+                                     <ul className="space-y-2">
+                                        {feedbackResult.suggestedActions.map((action: string, i: number) => (
+                                            <li key={i} className="text-neutral-300 text-sm bg-neutral-900 p-2 rounded border-l-2 border-lime-400">{action}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                             </motion.div>
+                        )}
+                     </>
                  )}
             </div>
         </div>

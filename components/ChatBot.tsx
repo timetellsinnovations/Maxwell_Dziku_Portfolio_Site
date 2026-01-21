@@ -14,7 +14,7 @@ const ChatBot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'model', text: "Hello! I'm Maxwell's AI Agent. I can explain how his hybrid background in Instructional Design and Code can save your organization time and money. What would you like to know?" }
+    { role: 'model', text: "Hi! I'm Maxwell's AI Assistant. I'm here to showcase his unique hybrid expertise in **Instructional Design**, **Full-Stack Development**, and **Automation**. Ask me how he builds scalable learning ecosystems or about his specific technical skills!" }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
