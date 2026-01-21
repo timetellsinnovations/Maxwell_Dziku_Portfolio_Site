@@ -3,23 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Maxwell Dziku | Learning Engineer & Automation Architect</title>
+    <title>Maxwell Dziku | Learning Engineer, Developer & Automation Architect</title>
     
     <!-- Security: Content Security Policy -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://esm.sh https://cdn.tailwindcss.com; script-src 'self' 'unsafe-inline' https://esm.sh https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://esm.sh https://generativelanguage.googleapis.com;">
 
     <!-- SEO & Metatags -->
-    <meta name="description" content="Portfolio of Maxwell Dziku - A hybrid Instructional Designer, Web Developer, and Automation Architect building next-gen learning ecosystems." />
-    <meta name="keywords" content="Instructional Design, Learning Engineer, React Developer, Automation, eLearning, xAPI, Maxwell Dziku" />
+    <meta name="description" content="Maxwell Dziku is a Learning Engineer bridging the gap between Instructional Design, Full-Stack Development, and AI Automation to build scalable learning ecosystems." />
+    <meta name="keywords" content="Instructional Design, Learning Engineer, React Developer, Automation Architect, eLearning, xAPI, Gemini AI, Next.js, Python, LMS Integration" />
+    <meta name="author" content="Maxwell Dziku" />
     <meta name="robots" content="index, follow" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://maxwell-dziku-portfolio-site.vercel.app/" />
-    <meta property="og:title" content="Maxwell Dziku | Learning Engineer" />
-    <meta property="og:description" content="Bridging the gap between Instructional Design, Full-Stack Dev, and Automation. See the portfolio." />
-    <!-- Ensure you upload a 1200x630px image named 'share-image.jpg' to your public/assets folder -->
+    <meta property="og:title" content="Maxwell Dziku | Learning Engineer & Automation Architect" />
+    <meta property="og:description" content="Don't just design courses. Build learning engines. Explore the portfolio of a hybrid designer-developer." />
     <meta property="og:image" content="https://maxwell-dziku-portfolio-site.vercel.app/assets/share-image.jpg" />
+    <meta property="og:image:alt" content="Maxwell Dziku Portfolio Preview" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
 
@@ -46,20 +47,20 @@
     }
     </script>
 
-    <!-- Dynamic Favicon (MD Monogram) -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23a3e635%22 rx=%2220%22/><text y=%2250%22 x=%2250%22 font-family=%22sans-serif%22 font-weight=%22bold%22 font-size=%2260%22 fill=%22%23000%22 text-anchor=%22middle%22 dominant-baseline=%22central%22>MD</text></svg>">
+    <!-- Dynamic Favicon (MD Monogram with high contrast) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23a3e635%22 rx=%2220%22/><text y=%2250%22 x=%2250%22 font-family=%22sans-serif%22 font-weight=%22900%22 font-size=%2255%22 fill=%22%23000%22 text-anchor=%22middle%22 dominant-baseline=%22central%22>MD</text></svg>">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Oswald:wght@400;500;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Oswald:wght@400;500;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
       body {
         background-color: #0a0a0a;
         color: #f5f5f5;
         font-family: 'Inter', sans-serif;
         overflow-x: hidden;
-        -webkit-tap-highlight-color: transparent; /* Remove blue highlight on tap */
+        -webkit-tap-highlight-color: transparent;
       }
       h1, h2, h3, h4, h5, h6 {
         font-family: 'Syne', sans-serif;
@@ -81,19 +82,7 @@
       ::-webkit-scrollbar-thumb:hover {
         background: #555;
       }
-
-      /* Print Styles for clean PDF export */
-      @media print {
-        body { background-color: white !important; color: black !important; }
-        header, footer, nav, button, .fixed { display: none !important; }
-        .text-lime-400 { color: #000 !important; font-weight: bold; }
-        a[href]:after { content: " (" attr(href) ")"; font-size: 0.8em; }
-        h1, h2, h3 { color: black !important; page-break-after: avoid; }
-        img { filter: none !important; }
-        section { padding: 2rem 0 !important; break-inside: avoid; }
-      }
       
-      /* Accessibility: Focus Visible */
       :focus-visible {
         outline: 2px solid #a3e635;
         outline-offset: 2px;

@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 type Message = {
   role: 'user' | 'model';
   text: string;
+  isError?: boolean;
 };
 
 const ChatBot: React.FC = () => {
@@ -23,9 +24,11 @@ const ChatBot: React.FC = () => {
   const chatSessionRef = useRef<Chat | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Debugging log
+  // Debugging log for API Key presence
   useEffect(() => {
-    console.log("ChatBot mounted. API Key present:", !!process.env.API_KEY);
+    // Check safely for the key
+    const hasKey = typeof process !== 'undefined' && process.env && process.env.API_KEY;
+    console.log("ChatBot Status: ", hasKey ? "API Key Present" : "API Key MISSING");
   }, []);
 
   // Scroll to bottom of chat
@@ -39,10 +42,13 @@ const ChatBot: React.FC = () => {
 
   const getChatSession = () => {
     if (!chatSessionRef.current) {
-        if (!process.env.API_KEY) {
-            throw new Error("API Key is missing");
+        // Explicit check for key before initializing
+        const apiKey = process.env.API_KEY;
+        if (!apiKey) {
+            throw new Error("API Key is missing. Please add API_KEY to Vercel Environment Variables.");
         }
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
+        const ai = new GoogleGenAI({ apiKey });
         
         // Construct context from portfolio data
         const contextData = {
@@ -71,7 +77,7 @@ const ChatBot: React.FC = () => {
         `;
 
         chatSessionRef.current = ai.chats.create({
-            model: 'gemini-3-pro-preview',
+            model: 'gemini-3-flash-preview',
             config: {
                 systemInstruction: systemInstruction,
             },
@@ -97,13 +103,19 @@ const ChatBot: React.FC = () => {
 
       const text = response.text || "I'm sorry, I couldn't process that request right now.";
       setMessages(prev => [...prev, { role: 'model', text }]);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Chat error:", error);
-      let errorMsg = "I encountered an error connecting to the AI. Please try again later.";
-      if ((error as Error).message.includes("API Key")) {
-         errorMsg = "System Error: API Key is missing. Please contact the site administrator.";
+      
+      let errorMsg = error.message || "Unknown connection error";
+      
+      // Friendly message for specific known errors
+      if (errorMsg.includes("403") || errorMsg.includes("API key")) {
+          errorMsg = "Configuration Error: Invalid or missing API Key.";
+      } else if (errorMsg.includes("429")) {
+          errorMsg = "Usage Limit: Too many requests. Please try again later.";
       }
-      setMessages(prev => [...prev, { role: 'model', text: errorMsg }]);
+      
+      setMessages(prev => [...prev, { role: 'model', text: `System Error: ${errorMsg}`, isError: true }]);
       // Reset session on error to clear potential bad state
       chatSessionRef.current = null;
     } finally {
@@ -113,7 +125,7 @@ const ChatBot: React.FC = () => {
 
   return (
     <>
-      {/* Toggle Button - Removed animation scale to ensure visibility */}
+      {/* Toggle Button */}
       <button
         onClick={() => {
             setIsOpen(true);
@@ -166,14 +178,19 @@ const ChatBot: React.FC = () => {
                   key={idx} 
                   className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
                 >
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${msg.role === 'user' ? 'bg-neutral-700 text-neutral-300' : 'bg-lime-400 text-black'}`}>
-                    {msg.role === 'user' ? <User size={16} /> : <Bot size={16} />}
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                      msg.role === 'user' ? 'bg-neutral-700 text-neutral-300' : 
+                      msg.isError ? 'bg-red-500 text-white' : 'bg-lime-400 text-black'
+                  }`}>
+                    {msg.role === 'user' ? <User size={16} /> : msg.isError ? <AlertCircle size={16} /> : <Bot size={16} />}
                   </div>
                   <div 
                     className={`max-w-[80%] p-3 rounded-2xl text-sm leading-relaxed ${
                       msg.role === 'user' 
                         ? 'bg-neutral-800 text-white rounded-tr-none' 
-                        : 'bg-neutral-950 border border-neutral-800 text-neutral-300 rounded-tl-none'
+                        : msg.isError 
+                            ? 'bg-red-900/20 border border-red-500/50 text-red-200 rounded-tl-none'
+                            : 'bg-neutral-950 border border-neutral-800 text-neutral-300 rounded-tl-none'
                     }`}
                   >
                     {msg.text}
@@ -228,7 +245,7 @@ const ChatBot: React.FC = () => {
                 </button>
               </form>
               <div className="text-[10px] text-neutral-600 text-center mt-2 font-mono">
-                Powered by Gemini 3 Pro
+                Powered by Gemini 3 Flash
               </div>
             </div>
           </motion.div>
