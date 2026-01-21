@@ -23,6 +23,11 @@ const ChatBot: React.FC = () => {
   const chatSessionRef = useRef<Chat | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Debugging log
+  useEffect(() => {
+    console.log("ChatBot mounted. API Key present:", !!process.env.API_KEY);
+  }, []);
+
   // Scroll to bottom of chat
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -108,21 +113,17 @@ const ChatBot: React.FC = () => {
 
   return (
     <>
-      {/* Toggle Button - High Z-Index to ensure visibility */}
-      <motion.button
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
+      {/* Toggle Button - Removed animation scale to ensure visibility */}
+      <button
         onClick={() => {
             setIsOpen(true);
             setIsMinimized(false);
         }}
-        className={`fixed bottom-6 right-6 z-[999] w-14 h-14 bg-lime-400 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(163,230,53,0.4)] text-black focus:outline-none focus:ring-4 focus:ring-white/50 ${isOpen && !isMinimized ? 'hidden' : 'flex'}`}
+        className={`fixed bottom-6 right-6 z-[999] w-14 h-14 bg-lime-400 rounded-full items-center justify-center shadow-[0_0_20px_rgba(163,230,53,0.4)] text-black focus:outline-none focus:ring-4 focus:ring-white/50 hover:scale-110 transition-transform ${isOpen && !isMinimized ? 'hidden' : 'flex'}`}
         aria-label="Open Chat"
       >
         <MessageCircle size={28} fill="currentColor" />
-      </motion.button>
+      </button>
 
       {/* Chat Window */}
       <AnimatePresence>
