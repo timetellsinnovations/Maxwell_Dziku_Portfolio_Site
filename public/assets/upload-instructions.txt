@@ -1,0 +1,5 @@
+This file exists to ensure the 'public/assets' folder is created in your repository.
+
+1. Upload your photo here.
+2. Rename it to "profile.JPG" (Case sensitive!).
+3. The app will automatically load it from /assets/profile.JPG.
