@@ -31,19 +31,56 @@
     <meta name="twitter:description" content="Bridging the gap between Instructional Design, Full-Stack Dev, and Automation." />
     <meta name="twitter:image" content="https://maxwell-dziku-portfolio-site.vercel.app/assets/share-image.jpg" />
     
-    <!-- JSON-LD Structured Data for SEO -->
+    <!-- JSON-LD Structured Data for SEO (E-E-A-T & AI Visibility) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Maxwell Dziku",
-      "jobTitle": "Learning Engineer & Automation Architect",
-      "url": "https://maxwell-dziku-portfolio-site.vercel.app/",
-      "sameAs": [
-        "https://www.linkedin.com/in/maxwelldzikuinstructionaldesign/",
-        "https://timetellsinnovations.com/case-studies"
-      ],
-      "knowsAbout": ["Instructional Design", "React Development", "Python Automation", "Learning Management Systems", "xAPI", "Generative AI"]
+      "@graph": [
+        {
+          "@type": "Person",
+          "name": "Maxwell Dziku",
+          "jobTitle": "Learning Engineer & Automation Architect",
+          "url": "https://maxwell-dziku-portfolio-site.vercel.app/",
+          "sameAs": [
+            "https://www.linkedin.com/in/maxwelldzikuinstructionaldesign/",
+            "https://timetellsinnovations.com/case-studies"
+          ],
+          "knowsAbout": ["Instructional Design", "React Development", "Python Automation", "Learning Management Systems", "xAPI", "Generative AI", "Bloom's Taxonomy", "RAG Architecture"],
+          "worksFor": {
+            "@type": "Organization",
+            "name": "Time Tells Innovations LLC"
+          }
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What is the advantage of hiring a Learning Engineer over a traditional ID?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Traditional Instructional Designers typically rely on standard authoring tools like Storyline. As a Learning Engineer, I bridge the gap by writing custom code (React, Node.js), automating workflows (Python), and architecting data strategies (xAPI). This allows for scalable, interactive, and data-rich learning ecosystems that standard tools cannot support."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How do you integrate Artificial Intelligence into L&D projects?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "I move beyond basic content generation. I build RAG (Retrieval-Augmented Generation) chatbots for secure internal knowledge access, automate learner feedback analysis using NLP, and create dynamic role-play simulators."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can you work with our existing Learning Management System (LMS)?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. My experience spans major platforms like Cornerstone, Canvas, and Sakai. I specialize in 'fixing' LMS limitations—whether that involves building custom SCORM/xAPI wrappers or developing 'Smart Walkthroughs' to improve user adoption."
+              }
+            }
+          ]
+        }
+      ]
     }
     </script>
 
