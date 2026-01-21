@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Maxwell Dziku | Learning Engineer, Developer & Automation Architect</title>
     
-    <!-- Security: Content Security Policy -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://esm.sh https://cdn.tailwindcss.com; script-src 'self' 'unsafe-inline' https://esm.sh https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://esm.sh https://generativelanguage.googleapis.com;">
+    <!-- Security: Relaxed CSP for Font/Image Loading -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://esm.sh https://cdn.tailwindcss.com; script-src 'self' 'unsafe-inline' https://esm.sh https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.tailwindcss.com; font-src 'self' https: data:; img-src 'self' data: https:; connect-src 'self' https://esm.sh https://generativelanguage.googleapis.com;">
 
     <!-- SEO & Metatags -->
     <meta name="description" content="Maxwell Dziku is a Learning Engineer bridging the gap between Instructional Design, Full-Stack Development, and AI Automation to build scalable learning ecosystems." />
@@ -47,7 +47,7 @@
     }
     </script>
 
-    <!-- Dynamic Favicon (MD Monogram with high contrast) -->
+    <!-- Dynamic Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23a3e635%22 rx=%2220%22/><text y=%2250%22 x=%2250%22 font-family=%22sans-serif%22 font-weight=%22900%22 font-size=%2255%22 fill=%22%23000%22 text-anchor=%22middle%22 dominant-baseline=%22central%22>MD</text></svg>">
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -68,7 +68,6 @@
       .font-oswald {
         font-family: 'Oswald', sans-serif;
       }
-      /* Custom Scrollbar */
       ::-webkit-scrollbar {
         width: 8px;
       }
@@ -82,7 +81,6 @@
       ::-webkit-scrollbar-thumb:hover {
         background: #555;
       }
-      
       :focus-visible {
         outline: 2px solid #a3e635;
         outline-offset: 2px;
@@ -97,16 +95,15 @@
     "lucide-react": "https://esm.sh/lucide-react@0.344.0",
     "framer-motion": "https://esm.sh/framer-motion@11.0.8",
     "@google/genai": "https://esm.sh/@google/genai",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "vite": "https://esm.sh/vite@^7.3.1",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
+    "react-dom/": "https://esm.sh/react-dom@^18.2.0/",
+    "react/": "https://esm.sh/react@^18.2.0/",
+    "vite": "https://esm.sh/vite@^5.0.0",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^4.2.1"
   }
 }
 </script>
 </head>
   <body>
-    <!-- Skip Link for Accessibility -->
     <a href="#main-content" class="fixed top-[-100px] left-0 bg-lime-400 text-black px-4 py-2 font-bold z-[100] transition-transform focus:translate-y-[100px]">
       Skip to Content
     </a>

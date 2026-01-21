@@ -5,9 +5,9 @@ import { motion } from 'framer-motion';
 import { Palette, Terminal, Workflow, ArrowUpRight, Database } from 'lucide-react';
 
 const About: React.FC = () => {
-  // DIRECTION: Create a 'public/assets' folder in your repo and upload your photo named 'profile.JPG'
-  // Note: Vercel is case-sensitive! Ensure the extension matches exactly (.JPG vs .jpg).
+  // Resilient image loading
   const [imgSrc, setImgSrc] = useState("/assets/profile.JPG");
+  const fallbackImg = "https://ui-avatars.com/api/?name=Maxwell+Dziku&background=a3e635&color=000&size=512";
 
   return (
     <div className="bg-neutral-900 text-neutral-200">
@@ -20,17 +20,15 @@ const About: React.FC = () => {
             <div className="flex flex-col gap-6">
                 <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-2 border-lime-400 p-1 relative group cursor-pointer shrink-0">
                     <div className="w-full h-full rounded-full overflow-hidden relative bg-neutral-800">
-                         {/* Image with fallback */}
                          <img 
                             src={imgSrc} 
-                            onError={() => setImgSrc("https://ui-avatars.com/api/?name=Maxwell+Dziku&background=a3e635&color=000&size=512")}
+                            onError={() => setImgSrc(fallbackImg)}
                             alt="Maxwell Dziku"
                             loading="lazy"
                             className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500"
                         />
                         <div className="absolute inset-0 bg-lime-400/20 mix-blend-overlay group-hover:bg-transparent transition-all"></div>
                     </div>
-                     {/* STATUS BADGE: Changed from 'Open to Work' to 'Always Building' to signal active expertise without desperation */}
                      <motion.div 
                         className="absolute -bottom-2 -right-2 bg-black text-lime-400 text-[10px] md:text-xs font-bold px-3 py-1 rounded-full border border-lime-400 whitespace-nowrap shadow-lg shadow-lime-400/20"
                         initial={{ opacity: 0, scale: 0.8 }}
@@ -107,9 +105,8 @@ const About: React.FC = () => {
           </div>
         </div>
 
-        {/* Experience Timeline Visualized */}
+        {/* Experience Timeline */}
         <div className="mt-32 relative">
-          {/* Vertical Line - Fixed alignment on mobile */}
           <div className="absolute left-[19px] top-0 bottom-0 w-[1px] bg-neutral-800 md:left-1/2 md:-ml-[0.5px]"></div>
           
           <div className="text-center mb-16 relative z-10">
@@ -119,11 +116,7 @@ const About: React.FC = () => {
           <div className="space-y-12">
             {EXPERIENCE.map((job, idx) => (
               <div key={job.id} className={`relative grid md:grid-cols-2 gap-8 items-center ${idx % 2 === 0 ? 'md:text-right' : 'md:text-left'}`}>
-                
-                {/* Dot on Timeline */}
                 <div className="absolute left-[15px] md:left-1/2 md:-ml-[5px] w-[9px] h-[9px] rounded-full bg-lime-400 border-2 border-black z-10 shadow-[0_0_10px_rgba(163,230,53,0.5)]"></div>
-
-                {/* Left Side (Content for Even, Empty for Odd on Desktop) */}
                 <div className={`${idx % 2 === 0 ? 'md:pr-12' : 'md:col-start-2 md:pl-12'} pl-16 md:pl-0`}>
                    <div className="group">
                         <span className="text-xl font-bold text-white block mb-1 group-hover:text-lime-400 transition-colors">{job.period}</span>
@@ -139,10 +132,7 @@ const About: React.FC = () => {
                         </div>
                    </div>
                 </div>
-
-                {/* Spacer for alternate side */}
-                <div className={`${idx % 2 === 0 ? 'hidden md:block' : 'hidden md:block md:col-start-1'} `}></div>
-                
+                <div className="hidden md:block"></div>
               </div>
             ))}
           </div>

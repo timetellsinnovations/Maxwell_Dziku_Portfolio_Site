@@ -4,7 +4,6 @@ import { PROJECTS, EXPERIENCE, SERVICES, SOCIAL_LINKS } from '../constants';
 import { MessageCircle, X, Send, Bot, User, Minimize2, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Initialize types for messages
 type Message = {
   role: 'user' | 'model';
   text: string;
@@ -15,23 +14,19 @@ const ChatBot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'model', text: "Hi! I'm Maxwell's AI Assistant. I can tell you how he bridges the gap between Instructional Design and Software Engineering. Ask me anything!" }
+    { role: 'model', text: "Hi! I'm Maxwell's AI Assistant. Ask me how I bridge the gap between Instructional Design and Software Engineering." }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  // Use a ref to persist the chat session across renders without re-initializing
   const chatSessionRef = useRef<Chat | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Debugging log for API Key presence
   useEffect(() => {
-    // Check safely for the key
     const hasKey = typeof process !== 'undefined' && process.env && process.env.API_KEY;
-    console.log("ChatBot Status: ", hasKey ? "API Key Present" : "API Key MISSING");
+    console.log("ChatBot mounted. API Key present:", !!hasKey);
   }, []);
 
-  // Scroll to bottom of chat
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -42,45 +37,21 @@ const ChatBot: React.FC = () => {
 
   const getChatSession = () => {
     if (!chatSessionRef.current) {
-        // Explicit check for key before initializing
         const apiKey = process.env.API_KEY;
-        if (!apiKey) {
-            throw new Error("API Key is missing. Please add API_KEY to Vercel Environment Variables.");
-        }
+        if (!apiKey) throw new Error("API Key missing. Check Vercel settings.");
 
         const ai = new GoogleGenAI({ apiKey });
-        
-        // Construct context from portfolio data
-        const contextData = {
-            projects: PROJECTS,
-            experience: EXPERIENCE,
-            services: SERVICES,
-            socials: SOCIAL_LINKS
-        };
+        const contextData = { projects: PROJECTS, experience: EXPERIENCE, services: SERVICES, socials: SOCIAL_LINKS };
 
-        const systemInstruction = `You are the AI portfolio assistant for Maxwell Dziku, a specialized Learning Engineer & Automation Architect.
-        
-        Your Core Persona:
-        You represent a unique convergence of three disciplines:
-        1. Instructional Design (Adult learning theory, ADDIE, Bloom's Taxonomy)
-        2. Full-Stack Web Development (React, Node.js, Next.js, TypeScript)
-        3. Workflow Automation (Python, Zapier, APIs, AI Agents)
+        const systemInstruction = `You are the AI portfolio assistant for Maxwell Dziku. 
+        Maxwell is a hybrid Learning Engineer: part Instructional Designer, part Software Developer.
+        Answer visitor questions based on this data: ${JSON.stringify(contextData)}.
+        Emphasize that he builds "learning engines," not just slide decks. Keep answers brief (2-3 sentences).`;
 
-        Your goal is to answer visitor questions using the provided JSON data: ${JSON.stringify(contextData)}.
-
-        Communication Guidelines:
-        - **The Hybrid Edge**: When asked about Maxwell's skills, emphasize that he doesn't just design courses—he builds the engines that run them. He moves beyond "click-next" eLearning to create immersive web apps and automated learning ecosystems.
-        - **Project Context**: When discussing projects like 'AI Training Coach' or 'Gamified ID Portfolio', highlight them as proof of this hybrid skillset.
-        - **Tone**: Professional, innovative, and concise (keep answers under 4 sentences unless asked for depth).
-        - **Contact**: If specific availability or rates are requested, guide them to the 'Contact' section.
-        - **Unknowns**: If the data doesn't contain the answer, politely suggest contacting Maxwell directly. Do not make up information.
-        `;
-
+        // MANDATORY: Use gemini-3-flash-preview for high quota limits
         chatSessionRef.current = ai.chats.create({
             model: 'gemini-3-flash-preview',
-            config: {
-                systemInstruction: systemInstruction,
-            },
+            config: { systemInstruction },
         });
     }
     return chatSessionRef.current;
@@ -97,26 +68,14 @@ const ChatBot: React.FC = () => {
 
     try {
       const chat = getChatSession();
-      const response = await chat.sendMessage({
-        message: userMessage,
-      });
-
-      const text = response.text || "I'm sorry, I couldn't process that request right now.";
+      const response = await chat.sendMessage({ message: userMessage });
+      const text = response.text || "I couldn't generate a response.";
       setMessages(prev => [...prev, { role: 'model', text }]);
     } catch (error: any) {
       console.error("Chat error:", error);
-      
-      let errorMsg = error.message || "Unknown connection error";
-      
-      // Friendly message for specific known errors
-      if (errorMsg.includes("403") || errorMsg.includes("API key")) {
-          errorMsg = "Configuration Error: Invalid or missing API Key.";
-      } else if (errorMsg.includes("429")) {
-          errorMsg = "Usage Limit: Too many requests. Please try again later.";
-      }
-      
-      setMessages(prev => [...prev, { role: 'model', text: `System Error: ${errorMsg}`, isError: true }]);
-      // Reset session on error to clear potential bad state
+      let errorMsg = error.message || "Connection failed";
+      if (errorMsg.includes("429")) errorMsg = "Quota exceeded. Try again in a minute.";
+      setMessages(prev => [...prev, { role: 'model', text: `Error: ${errorMsg}`, isError: true }]);
       chatSessionRef.current = null;
     } finally {
       setIsLoading(false);
@@ -125,128 +84,60 @@ const ChatBot: React.FC = () => {
 
   return (
     <>
-      {/* Toggle Button */}
       <button
-        onClick={() => {
-            setIsOpen(true);
-            setIsMinimized(false);
-        }}
-        className={`fixed bottom-6 right-6 z-[999] w-14 h-14 bg-lime-400 rounded-full items-center justify-center shadow-[0_0_20px_rgba(163,230,53,0.4)] text-black focus:outline-none focus:ring-4 focus:ring-white/50 hover:scale-110 transition-transform ${isOpen && !isMinimized ? 'hidden' : 'flex'}`}
-        aria-label="Open Chat"
+        onClick={() => { setIsOpen(true); setIsMinimized(false); }}
+        className={`fixed bottom-6 right-6 z-[999] w-14 h-14 bg-lime-400 rounded-full flex items-center justify-center shadow-xl text-black transition-transform hover:scale-110 ${isOpen && !isMinimized ? 'hidden' : 'flex'}`}
       >
-        <MessageCircle size={28} fill="currentColor" />
+        <MessageCircle size={28} />
       </button>
 
-      {/* Chat Window */}
       <AnimatePresence>
         {isOpen && !isMinimized && (
           <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 50, scale: 0.95 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed bottom-6 right-6 z-[999] w-[90vw] md:w-[400px] h-[500px] bg-neutral-900 border border-neutral-700 rounded-xl shadow-2xl flex flex-col overflow-hidden font-inter"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="fixed bottom-6 right-6 z-[999] w-[90vw] md:w-[400px] h-[500px] bg-neutral-900 border border-neutral-700 rounded-xl shadow-2xl flex flex-col overflow-hidden"
           >
-            {/* Header */}
             <div className="bg-neutral-950 p-4 border-b border-neutral-800 flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></div>
-                <h3 className="font-bold text-white font-syne uppercase tracking-wide">MaxAI Assistant</h3>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-lime-400"></div>
+                <h3 className="font-bold text-white uppercase text-xs tracking-widest">MaxAI Assistant</h3>
               </div>
-              <div className="flex gap-2 text-neutral-400">
-                <button 
-                  onClick={() => setIsMinimized(true)}
-                  className="hover:text-white transition-colors p-1"
-                  aria-label="Minimize"
-                >
-                    <Minimize2 size={18} />
-                </button>
-                <button 
-                  onClick={() => setIsOpen(false)}
-                  className="hover:text-white transition-colors p-1"
-                  aria-label="Close"
-                >
-                    <X size={18} />
-                </button>
+              <div className="flex gap-2">
+                <button onClick={() => setIsMinimized(true)} className="text-neutral-400 hover:text-white"><Minimize2 size={16} /></button>
+                <button onClick={() => setIsOpen(false)} className="text-neutral-400 hover:text-white"><X size={16} /></button>
               </div>
             </div>
 
-            {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-neutral-900/50 backdrop-blur-sm">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-neutral-900/50">
               {messages.map((msg, idx) => (
-                <div 
-                  key={idx} 
-                  className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
-                >
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-                      msg.role === 'user' ? 'bg-neutral-700 text-neutral-300' : 
-                      msg.isError ? 'bg-red-500 text-white' : 'bg-lime-400 text-black'
-                  }`}>
+                <div key={idx} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${msg.role === 'user' ? 'bg-neutral-700' : msg.isError ? 'bg-red-500' : 'bg-lime-400 text-black'}`}>
                     {msg.role === 'user' ? <User size={16} /> : msg.isError ? <AlertCircle size={16} /> : <Bot size={16} />}
                   </div>
-                  <div 
-                    className={`max-w-[80%] p-3 rounded-2xl text-sm leading-relaxed ${
-                      msg.role === 'user' 
-                        ? 'bg-neutral-800 text-white rounded-tr-none' 
-                        : msg.isError 
-                            ? 'bg-red-900/20 border border-red-500/50 text-red-200 rounded-tl-none'
-                            : 'bg-neutral-950 border border-neutral-800 text-neutral-300 rounded-tl-none'
-                    }`}
-                  >
+                  <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${msg.role === 'user' ? 'bg-neutral-800 text-white' : msg.isError ? 'bg-red-900/20 text-red-200' : 'bg-neutral-950 text-neutral-300'}`}>
                     {msg.text}
                   </div>
                 </div>
               ))}
-              
-              {/* Typing Indicator */}
-              {isLoading && (
-                <div className="flex gap-3">
-                   <div className="w-8 h-8 rounded-full bg-lime-400 text-black flex items-center justify-center shrink-0">
-                    <Bot size={16} />
-                  </div>
-                  <div className="bg-neutral-950 border border-neutral-800 p-3 rounded-2xl rounded-tl-none flex items-center gap-1">
-                    <motion.span 
-                      className="w-1.5 h-1.5 bg-neutral-500 rounded-full"
-                      animate={{ y: [0, -5, 0] }}
-                      transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
-                    />
-                    <motion.span 
-                      className="w-1.5 h-1.5 bg-neutral-500 rounded-full"
-                      animate={{ y: [0, -5, 0] }}
-                      transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }}
-                    />
-                    <motion.span 
-                      className="w-1.5 h-1.5 bg-neutral-500 rounded-full"
-                      animate={{ y: [0, -5, 0] }}
-                      transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }}
-                    />
-                  </div>
-                </div>
-              )}
+              {isLoading && <div className="text-neutral-500 text-xs italic ml-11">Typing...</div>}
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input Area */}
             <div className="p-4 bg-neutral-950 border-t border-neutral-800">
               <form onSubmit={handleSendMessage} className="relative">
                 <input
                   type="text"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="Ask about my projects..."
-                  className="w-full bg-neutral-900 text-white rounded-full py-3 pl-4 pr-12 text-sm border border-neutral-800 focus:border-lime-400 focus:outline-none transition-colors placeholder:text-neutral-600"
+                  placeholder="Ask a question..."
+                  className="w-full bg-neutral-900 text-white rounded-full py-3 pl-4 pr-12 text-sm border border-neutral-800 focus:border-lime-400 focus:outline-none"
                 />
-                <button 
-                  type="submit"
-                  disabled={!inputValue.trim() || isLoading}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-lime-400 text-black rounded-full hover:bg-lime-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
+                <button type="submit" disabled={!inputValue.trim() || isLoading} className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-lime-400 text-black rounded-full disabled:opacity-50">
                   <Send size={16} />
                 </button>
               </form>
-              <div className="text-[10px] text-neutral-600 text-center mt-2 font-mono">
-                Powered by Gemini 3 Flash
-              </div>
             </div>
           </motion.div>
         )}
