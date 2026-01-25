@@ -45,13 +45,13 @@ const About: React.FC = () => {
             </div>
             
             <p className="text-lg text-neutral-400 leading-relaxed">
-              I don't just design courses—I build learning engines. With <strong>10+ years</strong> in instructional design and educational technology, I've delivered solutions for Fortune 500 companies, academic institutions, and healthcare organizations including <strong>Johnson & Johnson Vision</strong>, <strong>NYU</strong>, <strong>Johns Hopkins</strong>, and <strong>MedHub</strong>.
+              I don't just design courses—I build learning engines. With <strong>18+ years</strong> in instructional design and educational technology, I've delivered solutions for Fortune 500 companies, academic institutions, and healthcare organizations including <strong>Johnson & Johnson Vision</strong>, <strong>NYU</strong>, <strong>Johns Hopkins</strong>, and <strong>MedHub</strong>.
             </p>
 
             {/* Impact Metrics Grid */}
             <div className="grid grid-cols-2 gap-4 border-t border-b border-neutral-800 py-6 my-2">
                 <div>
-                    <span className="text-3xl font-bold text-white font-syne block">40+</span>
+                    <span className="text-3xl font-bold text-white font-syne block">100+</span>
                     <span className="text-xs text-neutral-500 uppercase tracking-widest">E-Learning Modules</span>
                 </div>
                  <div>
@@ -59,7 +59,7 @@ const About: React.FC = () => {
                     <span className="text-xs text-neutral-500 uppercase tracking-widest">Medical Institutions</span>
                 </div>
                  <div>
-                    <span className="text-3xl font-bold text-white font-syne block">10+</span>
+                    <span className="text-3xl font-bold text-white font-syne block">18+</span>
                     <span className="text-xs text-neutral-500 uppercase tracking-widest">Years Experience</span>
                 </div>
                  <div>
@@ -73,7 +73,19 @@ const About: React.FC = () => {
                  <h4 className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-2">Credentials</h4>
                  <div className="flex items-center gap-3 text-sm text-white">
                     <GraduationCap size={16} className="text-lime-400" />
-                    <span>MA in Educational Technology</span>
+                    <span>MA, Educational Technology (UM-Flint)</span>
+                 </div>
+                 <div className="flex items-center gap-3 text-sm text-white">
+                    <GraduationCap size={16} className="text-lime-400" />
+                    <span>MA, Educational Administration (Concordia)</span>
+                 </div>
+                 <div className="flex items-center gap-3 text-sm text-white">
+                    <Award size={16} className="text-lime-400" />
+                    <span>MIT xPRO VR/AR Certified</span>
+                 </div>
+                 <div className="flex items-center gap-3 text-sm text-white">
+                    <Award size={16} className="text-lime-400" />
+                    <span>Google Project Management Professional</span>
                  </div>
                  <div className="flex items-center gap-3 text-sm text-white">
                     <Award size={16} className="text-lime-400" />

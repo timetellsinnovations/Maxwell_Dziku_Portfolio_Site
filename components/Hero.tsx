@@ -46,7 +46,7 @@ const Hero: React.FC = () => {
             className="max-w-xl"
           >
             <p className="text-neutral-400 text-lg md:text-xl leading-relaxed">
-              <strong>10+ years</strong> building learning engines for Fortune 500 companies and <strong>50+ medical institutions</strong>. From e-learning modules to full-stack applications—I bridge the gap between L&D and Engineering.
+              <strong>18+ years</strong> building learning engines for Fortune 500 companies. With <strong>100+ modules</strong> launched across <strong>50+ medical institutions</strong>, I bridge the gap between Instructional Design and Engineering.
             </p>
           </motion.div>
 
