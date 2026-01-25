@@ -1,11 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import Section from './ui/Section';
 import { GoogleGenAI } from "@google/genai";
-import { Sparkles, ArrowRight, BookOpen, Target, BrainCircuit, Loader2, Languages, Repeat, CheckCircle2, Calculator, TrendingUp, DollarSign, Users, Clock, MessageSquare, AlertTriangle, Lightbulb } from 'lucide-react';
+import { Sparkles, ArrowRight, BookOpen, Target, BrainCircuit, Loader2, Languages, Repeat, CheckCircle2, Calculator, TrendingUp, DollarSign, Users, Clock, MessageSquare, AlertTriangle, Lightbulb, Split, Layers } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AiPlayground: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'objectives' | 'jargon' | 'roi' | 'feedback'>('objectives');
+  const [activeTab, setActiveTab] = useState<'objectives' | 'jargon' | 'roi' | 'feedback' | 'chunker'>('objectives');
   
   // Objectives State
   const [topic, setTopic] = useState('');
@@ -32,6 +32,12 @@ const AiPlayground: React.FC = () => {
   const [feedbackResult, setFeedbackResult] = useState<any>(null);
   const [isFeedbackLoading, setIsFeedbackLoading] = useState(false);
   const [feedbackError, setFeedbackError] = useState('');
+
+  // Content Chunker State
+  const [chunkerInput, setChunkerInput] = useState('');
+  const [chunkerResult, setChunkerResult] = useState<any[]>([]);
+  const [isChunkerLoading, setIsChunkerLoading] = useState(false);
+  const [chunkerError, setChunkerError] = useState('');
 
   // ROI Derived State
   const roiMetrics = useMemo(() => {
@@ -189,6 +195,63 @@ const AiPlayground: React.FC = () => {
       }
   };
 
+  const generateChunker = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!chunkerInput.trim()) return;
+
+      setIsChunkerLoading(true);
+      setChunkerError('');
+      setChunkerResult([]);
+
+      try {
+          const apiKey = process.env.API_KEY;
+          if (!apiKey) throw new Error("System Error: API Key missing.");
+
+          const ai = new GoogleGenAI({ apiKey });
+
+          const prompt = `Act as an Expert Instructional Designer specializing in Microlearning.
+          
+          Task: Break the following raw source text into 3-4 distinct microlearning modules.
+          Input Text: "${chunkerInput}"
+          
+          Return ONLY a raw JSON array of objects. No markdown.
+          Structure:
+          [
+            {
+                "title": "Module Title",
+                "duration": "2 min",
+                "interactionIdea": "Drag and Drop sorting activity",
+                "keyTakeaway": "One sentence summary"
+            }
+          ]`;
+
+          const response = await ai.models.generateContent({
+              model: 'gemini-3-flash-preview',
+              contents: prompt
+          });
+
+          const text = response.text || "[]";
+          const cleanJson = text.replace(/```json/g, '').replace(/```/g, '').trim();
+
+          try {
+              const parsed = JSON.parse(cleanJson);
+              setChunkerResult(parsed);
+          } catch (e) {
+              setChunkerError("Could not parse chunking structure.");
+          }
+
+      } catch (err: any) {
+          console.error(err);
+          if (err.message?.includes("429")) {
+              setChunkerError("Quota exceeded. Please wait 30s.");
+          } else {
+              setChunkerError("Something went wrong.");
+          }
+      } finally {
+          setIsChunkerLoading(false);
+      }
+  };
+
   const handleRoiChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setRoiInputs(prev => ({
@@ -212,13 +275,20 @@ const AiPlayground: React.FC = () => {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-6 border-b border-neutral-800 mb-8 overflow-x-auto no-scrollbar">
+        <div className="flex gap-6 border-b border-neutral-800 mb-8 overflow-x-auto no-scrollbar pb-1">
             <button 
                 onClick={() => setActiveTab('objectives')}
                 className={`pb-4 text-sm font-bold uppercase tracking-widest transition-colors relative whitespace-nowrap flex items-center gap-2 ${activeTab === 'objectives' ? 'text-lime-400' : 'text-neutral-500 hover:text-white'}`}
             >
                 <Target size={16} /> ID Generator
                 {activeTab === 'objectives' && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-400" />}
+            </button>
+            <button 
+                onClick={() => setActiveTab('chunker')}
+                className={`pb-4 text-sm font-bold uppercase tracking-widest transition-colors relative whitespace-nowrap flex items-center gap-2 ${activeTab === 'chunker' ? 'text-lime-400' : 'text-neutral-500 hover:text-white'}`}
+            >
+                <Split size={16} /> Smart Chunker
+                {activeTab === 'chunker' && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-400" />}
             </button>
             <button 
                 onClick={() => setActiveTab('jargon')}
@@ -276,6 +346,37 @@ const AiPlayground: React.FC = () => {
                             </button>
                         </form>
                         {objError && <p className="text-red-400 text-sm mt-3 flex items-center gap-2"><BrainCircuit size={14}/> {objError}</p>}
+                    </motion.div>
+                )}
+
+                {activeTab === 'chunker' && (
+                    <motion.div 
+                        key="chunker-input"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <div className="mb-6">
+                             <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">Smart Content Chunker</h3>
+                             <p className="text-neutral-400 text-sm">Paste long-form content, and I'll segment it into microlearning modules with interaction ideas. Demonstrates <strong>Content Strategy</strong> and <strong>Automated Design</strong>.</p>
+                        </div>
+                         <form onSubmit={generateChunker} className="flex flex-col gap-4">
+                            <textarea 
+                                value={chunkerInput}
+                                onChange={(e) => setChunkerInput(e.target.value)}
+                                placeholder="Paste a long SOP, product manual, or policy document here..."
+                                className="w-full h-40 bg-neutral-950 border border-neutral-700 text-white rounded-lg p-4 focus:border-lime-400 focus:outline-none transition-colors resize-none placeholder:text-neutral-600"
+                            />
+                            <button 
+                                type="submit" 
+                                disabled={isChunkerLoading || !chunkerInput.trim()}
+                                className="self-start bg-lime-400 text-black px-6 py-3 rounded font-bold uppercase text-xs tracking-widest hover:bg-lime-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                            >
+                                {isChunkerLoading ? <Loader2 size={16} className="animate-spin" /> : <>Chunk Content <Split size={16} /></>}
+                            </button>
+                        </form>
+                        {chunkerError && <p className="text-red-400 text-sm mt-3 flex items-center gap-2"><BrainCircuit size={14}/> {chunkerError}</p>}
                     </motion.div>
                 )}
 
@@ -433,6 +534,50 @@ const AiPlayground: React.FC = () => {
                                         className="bg-neutral-900 p-4 rounded border-l-2 border-lime-400"
                                     >
                                         <p className="text-neutral-300 text-sm leading-relaxed">{obj}</p>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        )}
+                    </>
+                 )}
+
+                 {/* Chunker Results */}
+                 {activeTab === 'chunker' && (
+                    <>
+                        {!isChunkerLoading && chunkerResult.length === 0 && !chunkerError && (
+                            <div className="text-center text-neutral-600">
+                                <Layers size={48} className="mx-auto mb-4 opacity-20" />
+                                <p className="uppercase tracking-widest text-sm">Waiting for content...</p>
+                            </div>
+                        )}
+                        {isChunkerLoading && (
+                             <div className="space-y-4">
+                                <div className="h-24 bg-neutral-800 rounded w-full animate-pulse"></div>
+                                <div className="h-24 bg-neutral-800 rounded w-full animate-pulse"></div>
+                            </div>
+                        )}
+                        {chunkerResult.length > 0 && (
+                             <div className="space-y-6">
+                                <h4 className="text-white font-mono uppercase text-xs tracking-widest mb-4 border-b border-neutral-800 pb-2 flex items-center gap-2">
+                                    <Split size={14} className="text-lime-400"/> Microlearning Structure
+                                </h4>
+                                {chunkerResult.map((module, i) => (
+                                    <motion.div 
+                                        key={i}
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: i * 0.1 }}
+                                        className="bg-neutral-900 p-4 rounded border-l-2 border-lime-400"
+                                    >
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h5 className="font-bold text-white text-sm">{module.title}</h5>
+                                            <span className="text-xs bg-lime-400/10 text-lime-400 px-2 py-1 rounded font-mono">{module.duration}</span>
+                                        </div>
+                                        <p className="text-neutral-400 text-xs mb-2"><strong>Goal:</strong> {module.keyTakeaway}</p>
+                                        <div className="flex items-center gap-2 text-xs text-neutral-500 bg-neutral-950 p-2 rounded">
+                                            <Sparkles size={12} className="text-yellow-500" />
+                                            <span>{module.interactionIdea}</span>
+                                        </div>
                                     </motion.div>
                                 ))}
                             </div>

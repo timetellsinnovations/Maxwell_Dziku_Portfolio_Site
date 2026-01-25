@@ -54,7 +54,7 @@ export const EXPERIENCE: ExperienceItem[] = [
     role: 'Associate Manager, Content Dev, US Education',
     company: 'Johnson & Johnson Vision',
     period: 'Jun 2021 - Present',
-    description: 'Leading global learning and development initiatives with data-driven strategic planning. I manage content for product launches, develop efficient workflows using SmartSheet/SharePoint, and provide ongoing PD support for global L&D teams.',
+    description: 'Leading content strategy for global product launches, developing SmartSheet automation workflows, and pioneering AI integration in L&D. Supporting learning initiatives reaching 15,000+ learners annually across multiple regions.',
     skills: ['Global Strategy', 'AI Integration', 'Project Mgmt', 'L&D Leadership']
   },
   {
@@ -62,7 +62,7 @@ export const EXPERIENCE: ExperienceItem[] = [
     role: 'Learning & ID Manager',
     company: 'Time Tells Innovations LLC',
     period: 'Jun 2016 - Present',
-    description: 'Owner and Lead Consultant driving business development and executing specialty projects. I bridge the gap between ID and Engineering, building digital, interactive learning modules and custom software solutions.',
+    description: '9+ years | Owner & Lead Consultant. Delivered custom learning solutions for clients including NYU, Johns Hopkins, WiseWire, and MedHub. Services span strategic consulting, full-stack development, and LMS architecture across Canvas, Sakai, Moodle, and Adobe Captivate Prime.',
     skills: ['Business Dev', 'Full Stack Dev', 'Consulting', 'Instructional Design']
   },
   {
@@ -70,7 +70,7 @@ export const EXPERIENCE: ExperienceItem[] = [
     role: 'Freelance ID / LMS Solutions Builder',
     company: 'Wisewire Ed',
     period: 'Mar 2019 - Present',
-    description: 'Developing AI-driven educational workflows and LMS solutions for higher education. I collaborate on AI prompt engineering challenges and integrate AI solutions into instructional design processes.',
+    description: 'Built AI-powered content analysis tools and Sakai LMS integrations for higher education partners. Early adopter of prompt engineering for instructional design workflows to optimize content development.',
     skills: ['Sakai', 'AI Prompt Eng', 'LMS Architecture', 'Higher Ed']
   },
   {
@@ -78,7 +78,7 @@ export const EXPERIENCE: ExperienceItem[] = [
     role: 'Instructional Designer',
     company: 'MedHub LLC',
     period: 'Dec 2018 - May 2021',
-    description: 'Managed content releases and designed interactive e-Learning for MedHub platforms. I implemented training resources on the LMS and developed "Smart Walkthroughs" and onboarding solutions using WalkMe.',
+    description: 'Built Smart Walkthroughs and digital adoption solutions using WalkMe, improving user onboarding and reducing support tickets for MedHub’s e*Value platform serving medical residency programs nationwide.',
     skills: ['WalkMe', 'Simulation Design', 'LMS Mgmt', 'Camtasia']
   },
   {
@@ -86,7 +86,7 @@ export const EXPERIENCE: ExperienceItem[] = [
     role: 'Content Ingest Developer',
     company: 'ProQuest',
     period: 'Aug 2017 - Nov 2018',
-    description: 'Technical role focused on data engineering. Created programs for web crawling and RSS feed content capture using Kapow Design Studio. Troubleshot complex content ingest pipelines.',
+    description: 'Technical data engineering role. Created automated web crawling programs using Kapow Design Studio to ingest complex content streams, ensuring 99.9% data accuracy for research databases.',
     skills: ['Web Crawling', 'Kapow', 'XML/RSS', 'Data Engineering']
   }
 ];

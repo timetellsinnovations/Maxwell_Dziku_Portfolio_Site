@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Section from './ui/Section';
 import { SERVICES, EXPERIENCE } from '../constants';
 import { motion } from 'framer-motion';
-import { Palette, Terminal, Workflow, ArrowUpRight, Database } from 'lucide-react';
+import { Palette, Terminal, Workflow, ArrowUpRight, Database, Award, GraduationCap } from 'lucide-react';
 
 const About: React.FC = () => {
   // Resilient image loading
@@ -45,34 +45,59 @@ const About: React.FC = () => {
             </div>
             
             <p className="text-lg text-neutral-400 leading-relaxed">
-              Traditional Instructional Design has a ceiling. To break through, you need code.
-              I bridge the gap between L&D and Engineering. From custom <strong>React applications</strong> to complex <strong>Python automation scripts</strong>, I create solutions that standard authoring tools can't touch.
+              I don't just design courses—I build learning engines. With <strong>10+ years</strong> in instructional design and educational technology, I've delivered solutions for Fortune 500 companies, academic institutions, and healthcare organizations including <strong>Johnson & Johnson Vision</strong>, <strong>NYU</strong>, <strong>Johns Hopkins</strong>, and <strong>MedHub</strong>.
             </p>
+
+            {/* Impact Metrics Grid */}
+            <div className="grid grid-cols-2 gap-4 border-t border-b border-neutral-800 py-6 my-2">
+                <div>
+                    <span className="text-3xl font-bold text-white font-syne block">40+</span>
+                    <span className="text-xs text-neutral-500 uppercase tracking-widest">E-Learning Modules</span>
+                </div>
+                 <div>
+                    <span className="text-3xl font-bold text-white font-syne block">50+</span>
+                    <span className="text-xs text-neutral-500 uppercase tracking-widest">Medical Institutions</span>
+                </div>
+                 <div>
+                    <span className="text-3xl font-bold text-white font-syne block">10+</span>
+                    <span className="text-xs text-neutral-500 uppercase tracking-widest">Years Experience</span>
+                </div>
+                 <div>
+                    <span className="text-3xl font-bold text-white font-syne block">5+</span>
+                    <span className="text-xs text-neutral-500 uppercase tracking-widest">LMS Platforms</span>
+                </div>
+            </div>
+
+             {/* Credentials */}
+            <div className="space-y-3">
+                 <h4 className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-2">Credentials</h4>
+                 <div className="flex items-center gap-3 text-sm text-white">
+                    <GraduationCap size={16} className="text-lime-400" />
+                    <span>MA in Educational Technology</span>
+                 </div>
+                 <div className="flex items-center gap-3 text-sm text-white">
+                    <Award size={16} className="text-lime-400" />
+                    <span>WalkMe DAP Builder Certified</span>
+                 </div>
+            </div>
             
             {/* Visual Skill Stack */}
-            <div className="space-y-4 mt-4">
+            <div className="space-y-6 mt-4 border-t border-neutral-800 pt-6">
+                 <h4 className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-2">Tech Stack</h4>
                 {[
-                    { icon: Terminal, title: "Full Stack Dev", skills: "React, Next.js, Node.js, TypeScript", percent: "90%" },
-                    { icon: Workflow, title: "Automation", skills: "Python, Zapier, n8n, OpenAI API", percent: "95%" },
-                    { icon: Palette, title: "Instructional Design", skills: "Storyline, Camtasia, xAPI, Figma", percent: "100%" },
-                    { icon: Database, title: "LMS Architecture", skills: "Sakai, Canvas, SCORM, API Integration", percent: "85%" }
+                    { icon: Terminal, title: "Full Stack Dev", skills: "React, Next.js, Node.js, TypeScript", level: "Expert" },
+                    { icon: Workflow, title: "Automation", skills: "Python, Zapier, n8n, OpenAI API", level: "Advanced" },
+                    { icon: Palette, title: "Instructional Design", skills: "Storyline, Camtasia, xAPI, Figma", level: "Expert" },
+                    { icon: Database, title: "LMS Architecture", skills: "Sakai, Canvas, SCORM, API Integration", level: "Advanced" }
                 ].map((stack, i) => (
                     <div key={i} className="group">
                         <div className="flex items-center justify-between mb-2">
                              <div className="flex items-center gap-2 text-white font-bold uppercase tracking-wider text-sm">
                                 <stack.icon size={16} className="text-lime-400" /> {stack.title}
                              </div>
-                             <span className="text-xs text-neutral-500 font-mono">{stack.percent}</span>
+                             <span className="text-xs text-lime-400 bg-lime-400/10 px-2 py-0.5 rounded font-mono uppercase">{stack.level}</span>
                         </div>
-                        <div className="h-1 w-full bg-neutral-800 rounded-full overflow-hidden mb-2">
-                            <motion.div 
-                                initial={{ width: 0 }}
-                                whileInView={{ width: stack.percent }}
-                                transition={{ duration: 1, delay: 0.2 }}
-                                className="h-full bg-lime-400"
-                            />
-                        </div>
-                        <p className="text-xs text-neutral-500 font-mono">{stack.skills}</p>
+                        <p className="text-xs text-neutral-500 font-mono pl-6 border-l border-neutral-800">{stack.skills}</p>
                     </div>
                 ))}
             </div>

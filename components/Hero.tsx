@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Code2, Cpu, Layers, ArrowDown } from 'lucide-react';
+import { Code2, Cpu, Layers, ArrowDown, Briefcase } from 'lucide-react';
 import Marquee from './ui/Marquee';
 
 const Hero: React.FC = () => {
@@ -24,6 +24,10 @@ const Hero: React.FC = () => {
              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-lime-400/30 bg-lime-400/10 text-lime-400 text-xs font-mono uppercase tracking-wider">
               <Cpu size={14} /> Automate
             </span>
+             {/* HR Priority: Current Role Badge */}
+             <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-neutral-700 bg-neutral-900 text-neutral-300 text-xs font-mono uppercase tracking-wider">
+              <Briefcase size={14} className="text-lime-400" /> Currently Lead Content Dev @ J&J Vision
+            </span>
           </div>
           
           {/* Fluid Typography using clamp() for best-in-class responsiveness */}
@@ -42,8 +46,7 @@ const Hero: React.FC = () => {
             className="max-w-xl"
           >
             <p className="text-neutral-400 text-lg md:text-xl leading-relaxed">
-              I am <strong>Maxwell Dziku</strong>. I don't just design courses; I build learning engines.
-              Merging <span className="text-white">Instructional Design</span>, <span className="text-white">Full-Stack Development</span>, and <span className="text-white">Workflow Automation</span> to solve business problems.
+              <strong>10+ years</strong> building learning engines for Fortune 500 companies and <strong>50+ medical institutions</strong>. From e-learning modules to full-stack applications—I bridge the gap between L&D and Engineering.
             </p>
           </motion.div>
 
@@ -51,17 +54,24 @@ const Hero: React.FC = () => {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.8, type: "spring" }}
-            className="hidden md:flex gap-4"
+            className="hidden md:flex gap-4 items-center"
           >
-            <div className="w-24 h-24 rounded-full border border-neutral-800 bg-neutral-900 flex items-center justify-center">
-               <Code2 className="text-neutral-500" size={32} />
+            <div className="flex flex-col items-center gap-2 group">
+                <div className="w-24 h-24 rounded-full border border-neutral-800 bg-neutral-900 flex items-center justify-center group-hover:border-lime-400 transition-colors">
+                    <Code2 className="text-neutral-500 group-hover:text-lime-400 transition-colors" size={32} />
+                </div>
+                <span className="text-[10px] uppercase font-bold tracking-widest text-neutral-500">My Stack</span>
             </div>
+            
             <a 
               href="#work"
-              className="w-24 h-24 rounded-full bg-lime-400 flex items-center justify-center hover:scale-110 transition-transform cursor-pointer group focus-visible:ring-4 focus-visible:ring-white focus-visible:outline-none"
+              className="flex flex-col items-center gap-2 group cursor-pointer"
               aria-label="Scroll to work section"
             >
-               <ArrowDown className="text-black group-hover:translate-y-1 transition-transform duration-300" size={32} />
+                <div className="w-24 h-24 rounded-full bg-lime-400 flex items-center justify-center hover:scale-110 transition-transform focus-visible:ring-4 focus-visible:ring-white focus-visible:outline-none">
+                    <ArrowDown className="text-black group-hover:translate-y-1 transition-transform duration-300" size={32} />
+                </div>
+                <span className="text-[10px] uppercase font-bold tracking-widest text-lime-400">View Work</span>
             </a>
           </motion.div>
         </div>
