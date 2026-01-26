@@ -20,6 +20,24 @@ export const PROJECTS: Project[] = [
     // videoUrl: '/assets/ai-coach-preview.mp4' // Ready for video implementation
   },
   {
+    id: '5',
+    title: 'IOL Visual Simulator',
+    category: 'Medical Sim • React • Physics',
+    description: 'A physics-based visual simulator demonstrating Intraocular Lens effects for patient education. Features real-time optical adjustments and comparison modes.',
+    image: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=1200&auto=format&fit=crop',
+    year: '2024',
+    link: 'https://iol-visual-simulator.vercel.app'
+  },
+  {
+    id: '6',
+    title: 'EduPrime LMS Dashboard',
+    category: 'LMS Architecture • React • UX',
+    description: 'A custom-built Learning Management System interface focusing on instructor analytics and student progress tracking. Demonstrates complex dashboard architecture.',
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop',
+    year: '2024',
+    link: 'https://timetellsinnovations.github.io/eduprime-lms/'
+  },
+  {
     id: '2',
     title: 'Taxonomy of Significant Learning',
     category: 'Instructional Design • Dr. Fink',

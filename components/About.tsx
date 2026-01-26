@@ -7,7 +7,7 @@ import { Palette, Terminal, Workflow, ArrowUpRight, Database, Award, GraduationC
 const About: React.FC = () => {
   // Resilient image loading using GitHub Raw Content
   // This links directly to the file in your public/assets folder on GitHub
-  const [imgSrc, setImgSrc] = useState("https://raw.githubusercontent.com/timetellsinnovations/Maxwell_Dziku_Portfolio_Site/main/public/assets/profile.JPG");
+  const [imgSrc, setImgSrc] = useState("https://github.com/timetellsinnovations/image-assets/blob/main/public/assets/profile.JPG?raw=true");
   const fallbackImg = "https://ui-avatars.com/api/?name=Maxwell+Dziku&background=a3e635&color=000&size=512";
 
   return (
