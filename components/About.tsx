@@ -55,20 +55,20 @@ const About: React.FC = () => {
             {/* Impact Metrics Grid */}
             <div className="grid grid-cols-2 gap-4 border-t border-b border-neutral-800 py-6 my-2">
                 <div>
-                    <span className="text-3xl font-bold text-white font-syne block">100+</span>
-                    <span className="text-xs text-neutral-500 uppercase tracking-widest">E-Learning Modules</span>
-                </div>
-                 <div>
-                    <span className="text-3xl font-bold text-white font-syne block">50+</span>
-                    <span className="text-xs text-neutral-500 uppercase tracking-widest">Medical Institutions</span>
-                </div>
-                 <div>
                     <span className="text-3xl font-bold text-white font-syne block">18+</span>
                     <span className="text-xs text-neutral-500 uppercase tracking-widest">Years Experience</span>
                 </div>
                  <div>
-                    <span className="text-3xl font-bold text-white font-syne block">5+</span>
-                    <span className="text-xs text-neutral-500 uppercase tracking-widest">LMS Platforms</span>
+                    <span className="text-xl md:text-2xl font-bold text-white font-syne block mt-1">Global</span>
+                    <span className="text-xs text-neutral-500 uppercase tracking-widest">Enterprise Reach</span>
+                </div>
+                 <div>
+                    <span className="text-xl md:text-2xl font-bold text-white font-syne block mt-1">Full-Stack</span>
+                    <span className="text-xs text-neutral-500 uppercase tracking-widest">Design & Code</span>
+                </div>
+                 <div>
+                    <span className="text-xl md:text-2xl font-bold text-white font-syne block mt-1">Diverse</span>
+                    <span className="text-xs text-neutral-500 uppercase tracking-widest">Healthcare & EdTech</span>
                 </div>
             </div>
 

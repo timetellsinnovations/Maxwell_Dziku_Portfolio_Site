@@ -22,12 +22,12 @@ const Contact: React.FC = () => {
       <div className="absolute -right-20 -bottom-20 w-64 h-64 border-[20px] border-black/5 rounded-full pointer-events-none"></div>
       
       <Section id="contact">
-        <div className="grid md:grid-cols-2 gap-16 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-16 relative z-10">
           
           {/* Left: Heading & Context */}
-          <div className="flex flex-col justify-between h-full">
+          <div className="flex flex-col justify-between h-full relative z-20">
             <div>
-                <h2 className="text-6xl md:text-8xl font-bold uppercase leading-none font-syne mb-8">
+                <h2 className="text-6xl md:text-8xl font-bold uppercase leading-[0.9] font-syne mb-8 break-words">
                 Let's build <br/> something <span className="opacity-40">bold.</span>
                 </h2>
                 <p className="text-xl md:text-2xl font-medium leading-relaxed mb-8 max-w-lg">
@@ -50,7 +50,7 @@ const Contact: React.FC = () => {
           </div>
 
           {/* Right: Interactive Form */}
-          <div className="bg-white p-8 md:p-10 rounded-sm shadow-2xl shadow-black/10">
+          <div className="bg-white p-8 md:p-10 rounded-sm shadow-2xl shadow-black/10 relative z-20">
             <h3 className="text-2xl font-bold font-syne uppercase mb-6 flex items-center gap-2">
                 <Send size={24} className="text-lime-600" /> Start a project
             </h3>

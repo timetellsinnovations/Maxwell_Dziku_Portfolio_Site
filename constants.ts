@@ -93,6 +93,11 @@ export const EXPERIENCE: ExperienceItem[] = [
 
 export const SERVICES: Service[] = [
   {
+    id: '3',
+    title: 'Instructional Design',
+    description: 'I design scenario-based learning experiences grounded in cognitive science—making complex topics accessible without sacrificing accuracy.'
+  },
+  {
     id: '1',
     title: 'Web App Development',
     description: 'I build custom learning applications, simulators, and performance support tools using React, Next.js, and Node.'
@@ -101,11 +106,6 @@ export const SERVICES: Service[] = [
     id: '2',
     title: 'Workflow Automation',
     description: 'I automate repetitive L&D tasks (content parsing, reporting, notifications) using Python, Webhooks, and Low-Code platforms.'
-  },
-  {
-    id: '3',
-    title: 'Instructional Design',
-    description: 'I design scenario-based learning experiences grounded in cognitive science—making complex topics accessible without sacrificing accuracy.'
   },
   {
     id: '4',
