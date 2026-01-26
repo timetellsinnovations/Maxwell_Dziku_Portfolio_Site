@@ -103,9 +103,9 @@ const About: React.FC = () => {
                  <h4 className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-2">Tech Stack</h4>
                 {[
                     { icon: Terminal, title: "Full Stack Dev", skills: "React, Next.js, Node.js, TypeScript", level: "Expert" },
-                    { icon: Workflow, title: "Automation", skills: "Python, Zapier, n8n, OpenAI API", level: "Advanced" },
-                    { icon: Palette, title: "Instructional Design", skills: "Storyline, Camtasia, xAPI, Figma", level: "Expert" },
-                    { icon: Database, title: "LMS Architecture", skills: "Sakai, Canvas, SCORM, API Integration", level: "Advanced" }
+                    { icon: Workflow, title: "Automation", skills: "Python, Zapier, n8n, OpenAI API", level: "Expert" },
+                    { icon: Palette, title: "Instructional Design", skills: "Storyline, Camtasia, xAPI, Figma", level: "Advanced" },
+                    { icon: Database, title: "LMS Architecture", skills: "Sakai, Canvas, SCORM, API Integration", level: "Expert" }
                 ].map((stack, i) => (
                     <div key={i} className="group">
                         <div className="flex items-center justify-between mb-2">
