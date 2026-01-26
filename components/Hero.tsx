@@ -26,7 +26,7 @@ const Hero: React.FC = () => {
             </span>
              {/* HR Priority: Current Role Badge */}
              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-neutral-700 bg-neutral-900 text-neutral-300 text-xs font-mono uppercase tracking-wider">
-              <Briefcase size={14} className="text-lime-400" /> Currently Lead Content Dev @ J&J Vision
+              <Briefcase size={14} className="text-lime-400" /> Associate Manager, Content Dev @ J&J Vision
             </span>
           </div>
           
@@ -96,10 +96,4 @@ const Hero: React.FC = () => {
       </div>
 
       <div className="mt-16 md:mt-24 border-y border-neutral-900 py-10 bg-neutral-950">
-        <Marquee text="Instructional Design • Web Development • Automation •" />
-      </div>
-    </div>
-  );
-};
-
-export default Hero;
+        <Marquee text="Instructional Design
