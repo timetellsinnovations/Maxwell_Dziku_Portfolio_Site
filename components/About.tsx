@@ -60,8 +60,8 @@ const About: React.FC = () => {
                     <span className="text-xs text-neutral-500 uppercase tracking-widest">Years Experience</span>
                 </div>
                  <div>
-                    <span className="text-xl md:text-2xl font-bold text-white font-syne block mt-1">100+</span>
-                    <span className="text-xs text-neutral-500 uppercase tracking-widest">Modules Launched</span>
+                    <span className="text-xl md:text-2xl font-bold text-white font-syne block mt-1">Global</span>
+                    <span className="text-xs text-neutral-500 uppercase tracking-widest">Enterprise Reach</span>
                 </div>
                  <div>
                     <span className="text-xl md:text-2xl font-bold text-white font-syne block mt-1">Full-Stack</span>

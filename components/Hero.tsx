@@ -18,11 +18,6 @@ const Hero: React.FC = () => {
         >
           {/* Top Tags / Stats Row */}
           <div className="flex flex-wrap items-center gap-4 mb-8 border-b border-neutral-800 pb-6">
-             {/* Key Metric: 100+ Modules */}
-             <span className="inline-flex items-center gap-2 px-4 py-2 bg-lime-400 text-black text-sm font-bold font-mono uppercase tracking-widest hover:scale-105 transition-transform cursor-default">
-              <Rocket size={16} /> 100+ Modules Launched
-            </span>
-
              {/* Role Badge */}
              <span className="inline-flex items-center gap-2 px-4 py-2 border border-neutral-700 bg-neutral-900 text-neutral-300 text-xs font-mono uppercase tracking-wider">
               <Briefcase size={14} className="text-lime-400" /> 
