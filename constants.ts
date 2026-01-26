@@ -14,7 +14,7 @@ export const PROJECTS: Project[] = [
     title: 'AI Training Coach',
     category: 'SaaS • AI • Roleplay',
     description: 'A conversational AI platform designed to simulate real-world training scenarios. Users interact with AI personas to practice soft skills, objection handling, and leadership communication.',
-    image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1200&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1617791160505-6f00504e3519?q=80&w=1200&auto=format&fit=crop',
     year: '2024',
     link: 'https://aitrainingcoach.com/',
     // videoUrl: '/assets/ai-coach-preview.mp4' // Ready for video implementation
@@ -24,7 +24,7 @@ export const PROJECTS: Project[] = [
     title: 'IOL Visual Simulator',
     category: 'Medical Sim • React • Physics',
     description: 'A physics-based visual simulator demonstrating Intraocular Lens effects for patient education. Features real-time optical adjustments and comparison modes.',
-    image: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=1200&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1589578228447-e1a4e481c6c8?q=80&w=1200&auto=format&fit=crop',
     year: '2024',
     link: 'https://iol-visual-simulator.vercel.app'
   },
@@ -45,15 +45,6 @@ export const PROJECTS: Project[] = [
     image: 'https://images.unsplash.com/photo-1518432031352-d6fc5c10da5a?q=80&w=1200&auto=format&fit=crop',
     year: '2023',
     link: 'https://maxprojectshare.s3.amazonaws.com/taxonomy-of-significant-learning-by-dr-fink-raw-_A0hv-iW/content/index.html#/'
-  },
-  {
-    id: '3',
-    title: 'Gamified ID Portfolio',
-    category: 'Storyline 360 • JavaScript • Game Design',
-    description: 'An interactive, game-based resume pushing the limits of Articulate Storyline. Features complex variable logic, motion graphics, and JavaScript triggers.',
-    image: 'https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=1200&auto=format&fit=crop',
-    year: '2023',
-    link: 'https://share.articulate.com/HyJ_jPirnDg87SqjeJEAE'
   },
   {
     id: '4',
