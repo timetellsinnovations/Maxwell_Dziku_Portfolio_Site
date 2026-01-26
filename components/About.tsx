@@ -5,8 +5,9 @@ import { motion } from 'framer-motion';
 import { Palette, Terminal, Workflow, ArrowUpRight, Database, Award, GraduationCap } from 'lucide-react';
 
 const About: React.FC = () => {
-  // Resilient image loading
-  const [imgSrc, setImgSrc] = useState("/assets/profile.JPG");
+  // Resilient image loading using GitHub Raw Content
+  // This links directly to the file in your public/assets folder on GitHub
+  const [imgSrc, setImgSrc] = useState("https://raw.githubusercontent.com/timetellsinnovations/Maxwell_Dziku_Portfolio_Site/main/public/assets/profile.JPG");
   const fallbackImg = "https://ui-avatars.com/api/?name=Maxwell+Dziku&background=a3e635&color=000&size=512";
 
   return (
@@ -59,8 +60,8 @@ const About: React.FC = () => {
                     <span className="text-xs text-neutral-500 uppercase tracking-widest">Years Experience</span>
                 </div>
                  <div>
-                    <span className="text-xl md:text-2xl font-bold text-white font-syne block mt-1">Global</span>
-                    <span className="text-xs text-neutral-500 uppercase tracking-widest">Enterprise Reach</span>
+                    <span className="text-xl md:text-2xl font-bold text-white font-syne block mt-1">100+</span>
+                    <span className="text-xs text-neutral-500 uppercase tracking-widest">Modules Launched</span>
                 </div>
                  <div>
                     <span className="text-xl md:text-2xl font-bold text-white font-syne block mt-1">Full-Stack</span>
