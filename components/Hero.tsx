@@ -32,9 +32,9 @@ const Hero: React.FC = () => {
           
           {/* Fluid Typography using clamp() for best-in-class responsiveness */}
           <h1 className="font-bold leading-[0.95] md:leading-[0.9] font-syne uppercase text-white mb-8 tracking-tight" style={{ fontSize: 'clamp(3.5rem, 9vw, 9rem)' }}>
-            Learning <br/>
-            Engineered <br/>
-            <span className="text-lime-400">For Scale.</span>
+            Turning <br/>
+            Complexity <br/>
+            <span className="text-lime-400">Into Clarity.</span>
           </h1>
         </motion.div>
 
@@ -46,7 +46,7 @@ const Hero: React.FC = () => {
             className="max-w-xl"
           >
             <p className="text-neutral-400 text-lg md:text-xl leading-relaxed">
-              <strong>18+ years</strong> building learning engines for Fortune 500 companies. With <strong>100+ modules</strong> launched across <strong>50+ medical institutions</strong>, I bridge the gap between Instructional Design and Engineering.
+              <strong>I build learning engines and experiences that turn complexity into clarity.</strong> With 18+ years experience and 100+ modules launched, I bridge the gap between Instructional Design and Engineering.
             </p>
           </motion.div>
 
@@ -96,4 +96,10 @@ const Hero: React.FC = () => {
       </div>
 
       <div className="mt-16 md:mt-24 border-y border-neutral-900 py-10 bg-neutral-950">
-        <Marquee text="Instructional Design
+        <Marquee text="Instructional Design • Web Development • Automation •" />
+      </div>
+    </div>
+  );
+};
+
+export default Hero;

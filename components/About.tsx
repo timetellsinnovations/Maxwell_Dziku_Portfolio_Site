@@ -48,6 +48,10 @@ const About: React.FC = () => {
               I don't just design courses—I build learning engines. With <strong>18+ years</strong> in instructional design and educational technology, I've delivered solutions for Fortune 500 companies, academic institutions, and healthcare organizations including <strong>Johnson & Johnson Vision</strong>, <strong>NYU</strong>, <strong>Johns Hopkins</strong>, and <strong>MedHub</strong>.
             </p>
 
+            <p className="text-lg text-neutral-400 leading-relaxed border-l-2 border-lime-400 pl-4">
+              I specialize in translating complex, technical subject matter into clear, engaging learning experiences. Whether it's medical procedures, compliance regulations, or software workflows—I work closely with SMEs to distill expertise into content that learners actually retain.
+            </p>
+
             {/* Impact Metrics Grid */}
             <div className="grid grid-cols-2 gap-4 border-t border-b border-neutral-800 py-6 my-2">
                 <div>

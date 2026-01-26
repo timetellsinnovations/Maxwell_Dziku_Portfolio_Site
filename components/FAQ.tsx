@@ -5,8 +5,8 @@ import { Plus, Minus, HelpCircle } from 'lucide-react';
 
 const FAQS = [
   {
-    question: "What is the advantage of hiring a Learning Engineer over a traditional ID?",
-    answer: "Traditional Instructional Designers typically rely on standard authoring tools like Storyline. As a Learning Engineer, I bridge the gap by writing custom code (React, Node.js), automating workflows (Python), and architecting data strategies (xAPI). This allows for scalable, interactive, and data-rich learning ecosystems that standard tools cannot support."
+    question: "What makes you different from a traditional Instructional Designer?",
+    answer: "I don't just organize content—I translate it. While traditional IDs rely on standard tools, I combine cognitive science with full-stack engineering to build custom learning engines. I work with SMEs to take dense, technical information and restructure it for comprehension and retention, using data visualization, progressive disclosure, and plain-language principles."
   },
   {
     question: "How do you integrate Artificial Intelligence into L&D projects?",

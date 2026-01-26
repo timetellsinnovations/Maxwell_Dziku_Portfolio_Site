@@ -1,11 +1,11 @@
 import React, { useState, useMemo } from 'react';
 import Section from './ui/Section';
 import { GoogleGenAI } from "@google/genai";
-import { Sparkles, ArrowRight, BookOpen, Target, BrainCircuit, Loader2, Languages, Repeat, CheckCircle2, Calculator, TrendingUp, DollarSign, Users, Clock, MessageSquare, AlertTriangle, Lightbulb, Split, Layers } from 'lucide-react';
+import { Sparkles, ArrowRight, BookOpen, Target, BrainCircuit, Loader2, Languages, Repeat, CheckCircle2, Calculator, TrendingUp, DollarSign, Users, Clock, MessageSquare, AlertTriangle, Lightbulb, Split, Layers, Search, Scale } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AiPlayground: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'objectives' | 'jargon' | 'roi' | 'feedback' | 'chunker'>('objectives');
+  const [activeTab, setActiveTab] = useState<'objectives' | 'jargon' | 'roi' | 'feedback' | 'chunker' | 'complexity'>('objectives');
   
   // Objectives State
   const [topic, setTopic] = useState('');
@@ -13,11 +13,17 @@ const AiPlayground: React.FC = () => {
   const [isObjLoading, setIsObjLoading] = useState(false);
   const [objError, setObjError] = useState('');
 
-  // Jargon State
+  // Jargon (Clarity Engine) State
   const [jargonInput, setJargonInput] = useState('');
   const [jargonResult, setJargonResult] = useState('');
   const [isJargonLoading, setIsJargonLoading] = useState(false);
   const [jargonError, setJargonError] = useState('');
+
+  // Complexity Analyzer State
+  const [complexityInput, setComplexityInput] = useState('');
+  const [complexityResult, setComplexityResult] = useState<any>(null);
+  const [isComplexityLoading, setIsComplexityLoading] = useState(false);
+  const [complexityError, setComplexityError] = useState('');
 
   // ROI Calculator State
   const [roiInputs, setRoiInputs] = useState({
@@ -140,6 +146,61 @@ const AiPlayground: React.FC = () => {
     } finally {
         setIsJargonLoading(false);
     }
+  };
+
+  const generateComplexityAnalysis = async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!complexityInput.trim()) return;
+
+      setIsComplexityLoading(true);
+      setComplexityError('');
+      setComplexityResult(null);
+
+      try {
+          const apiKey = process.env.API_KEY;
+          if (!apiKey) throw new Error("System Error: API Key missing.");
+
+          const ai = new GoogleGenAI({ apiKey });
+
+          const prompt = `Act as a Literacy Specialist and Editor. Analyze the following text.
+          
+          Input: "${complexityInput}"
+          
+          Return ONLY a raw JSON object with this structure: 
+          { 
+            "gradeLevel": "e.g. 12th Grade (Complex)", 
+            "score": 45, // 0-100 scale where 100 is easiest
+            "wordCount": 150,
+            "suggestions": ["suggestion 1", "suggestion 2"],
+            "simplifiedVersion": "A completely rewritten, simpler version of the input."
+          }
+          No markdown.`;
+
+          const response = await ai.models.generateContent({
+              model: 'gemini-3-flash-preview',
+              contents: prompt
+          });
+
+          const text = response.text || "{}";
+          const cleanJson = text.replace(/```json/g, '').replace(/```/g, '').trim();
+
+          try {
+              const parsed = JSON.parse(cleanJson);
+              setComplexityResult(parsed);
+          } catch (e) {
+              setComplexityError("Could not analyze text structure.");
+          }
+
+      } catch (err: any) {
+          console.error(err);
+          if (err.message?.includes("429")) {
+              setComplexityError("Quota exceeded. Please wait 30s.");
+          } else {
+              setComplexityError("Something went wrong.");
+          }
+      } finally {
+          setIsComplexityLoading(false);
+      }
   };
 
   const generateFeedbackAnalysis = async (e: React.FormEvent) => {
@@ -284,18 +345,25 @@ const AiPlayground: React.FC = () => {
                 {activeTab === 'objectives' && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-400" />}
             </button>
             <button 
-                onClick={() => setActiveTab('chunker')}
-                className={`pb-4 text-sm font-bold uppercase tracking-widest transition-colors relative whitespace-nowrap flex items-center gap-2 ${activeTab === 'chunker' ? 'text-lime-400' : 'text-neutral-500 hover:text-white'}`}
+                onClick={() => setActiveTab('complexity')}
+                className={`pb-4 text-sm font-bold uppercase tracking-widest transition-colors relative whitespace-nowrap flex items-center gap-2 ${activeTab === 'complexity' ? 'text-lime-400' : 'text-neutral-500 hover:text-white'}`}
             >
-                <Split size={16} /> Smart Chunker
-                {activeTab === 'chunker' && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-400" />}
+                <Scale size={16} /> Complexity Analyzer
+                {activeTab === 'complexity' && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-400" />}
             </button>
             <button 
                 onClick={() => setActiveTab('jargon')}
                 className={`pb-4 text-sm font-bold uppercase tracking-widest transition-colors relative whitespace-nowrap flex items-center gap-2 ${activeTab === 'jargon' ? 'text-lime-400' : 'text-neutral-500 hover:text-white'}`}
             >
-                <Languages size={16} /> Jargon Buster
+                <Languages size={16} /> Clarity Engine
                 {activeTab === 'jargon' && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-400" />}
+            </button>
+            <button 
+                onClick={() => setActiveTab('chunker')}
+                className={`pb-4 text-sm font-bold uppercase tracking-widest transition-colors relative whitespace-nowrap flex items-center gap-2 ${activeTab === 'chunker' ? 'text-lime-400' : 'text-neutral-500 hover:text-white'}`}
+            >
+                <Split size={16} /> Smart Chunker
+                {activeTab === 'chunker' && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-400" />}
             </button>
             <button 
                 onClick={() => setActiveTab('roi')}
@@ -349,6 +417,37 @@ const AiPlayground: React.FC = () => {
                     </motion.div>
                 )}
 
+                 {activeTab === 'complexity' && (
+                    <motion.div 
+                        key="complexity-input"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <div className="mb-6">
+                             <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">Content Complexity Analyzer</h3>
+                             <p className="text-neutral-400 text-sm">Paste a paragraph, and I'll analyze its grade level and simplify it. Demonstrates <strong>Accessibility</strong> and <strong>Translation of Complex Topics</strong>.</p>
+                        </div>
+                         <form onSubmit={generateComplexityAnalysis} className="flex flex-col gap-4">
+                            <textarea 
+                                value={complexityInput}
+                                onChange={(e) => setComplexityInput(e.target.value)}
+                                placeholder="Paste dense text here..."
+                                className="w-full h-40 bg-neutral-950 border border-neutral-700 text-white rounded-lg p-4 focus:border-lime-400 focus:outline-none transition-colors resize-none placeholder:text-neutral-600"
+                            />
+                            <button 
+                                type="submit" 
+                                disabled={isComplexityLoading || !complexityInput.trim()}
+                                className="self-start bg-lime-400 text-black px-6 py-3 rounded font-bold uppercase text-xs tracking-widest hover:bg-lime-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                            >
+                                {isComplexityLoading ? <Loader2 size={16} className="animate-spin" /> : <>Analyze <Scale size={16} /></>}
+                            </button>
+                        </form>
+                        {complexityError && <p className="text-red-400 text-sm mt-3 flex items-center gap-2"><BrainCircuit size={14}/> {complexityError}</p>}
+                    </motion.div>
+                )}
+
                 {activeTab === 'chunker' && (
                     <motion.div 
                         key="chunker-input"
@@ -389,14 +488,14 @@ const AiPlayground: React.FC = () => {
                          transition={{ duration: 0.3 }}
                     >
                          <div className="mb-6">
-                             <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">Technical Jargon Buster</h3>
-                             <p className="text-neutral-400 text-sm">Paste complex technical text, and I'll translate it for non-technical stakeholders. Demonstrates <strong>NLP</strong> and <strong>Communication Skills</strong>.</p>
+                             <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">Clarity Engine (Jargon Buster)</h3>
+                             <p className="text-neutral-400 text-sm">Translating L&D-speak into plain language—because clarity is a skill. Demonstrates <strong>NLP</strong> and <strong>Communication Skills</strong>.</p>
                         </div>
                         <form onSubmit={generateJargonBuster} className="flex flex-col gap-4">
                             <textarea 
                                 value={jargonInput}
                                 onChange={(e) => setJargonInput(e.target.value)}
-                                placeholder="Paste text like: 'We need to refactor the monolithic architecture to microservices to reduce technical debt and improve CI/CD pipelines...'"
+                                placeholder="Paste text like: 'We need to refactor the monolithic architecture to microservices to reduce technical debt...'"
                                 className="w-full h-40 bg-neutral-950 border border-neutral-700 text-white rounded-lg p-4 focus:border-lime-400 focus:outline-none transition-colors resize-none placeholder:text-neutral-600"
                             />
                             <button 
@@ -539,6 +638,60 @@ const AiPlayground: React.FC = () => {
                             </div>
                         )}
                     </>
+                 )}
+
+                  {/* Complexity Results */}
+                 {activeTab === 'complexity' && (
+                    <>
+                        {!isComplexityLoading && !complexityResult && !complexityError && (
+                            <div className="text-center text-neutral-600">
+                                <Scale size={48} className="mx-auto mb-4 opacity-20" />
+                                <p className="uppercase tracking-widest text-sm">Waiting for analysis...</p>
+                            </div>
+                        )}
+                        {isComplexityLoading && (
+                             <div className="space-y-4">
+                                <div className="h-8 bg-neutral-800 rounded w-1/2 animate-pulse"></div>
+                                <div className="h-24 bg-neutral-800 rounded w-full animate-pulse"></div>
+                            </div>
+                        )}
+                        {complexityResult && (
+                             <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="space-y-6"
+                             >
+                                <div className="flex justify-between items-center bg-neutral-900 p-4 rounded border border-neutral-800">
+                                    <div>
+                                        <p className="text-xs text-neutral-500 uppercase font-bold">Grade Level</p>
+                                        <p className="text-xl font-bold text-white">{complexityResult.gradeLevel}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-xs text-neutral-500 uppercase font-bold">Readability Score</p>
+                                        <p className={`text-2xl font-mono font-bold ${complexityResult.score > 60 ? 'text-lime-400' : 'text-yellow-500'}`}>
+                                            {complexityResult.score}/100
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h4 className="text-white font-mono uppercase text-xs tracking-widest mb-3 flex items-center gap-2">
+                                        <CheckCircle2 size={14} className="text-lime-400"/> Simplified Version
+                                    </h4>
+                                    <div className="bg-neutral-900 p-4 rounded border-l-2 border-lime-400">
+                                        <p className="text-neutral-200 text-sm leading-relaxed">{complexityResult.simplifiedVersion}</p>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                     <h4 className="text-white font-mono uppercase text-xs tracking-widest mb-2">Suggestions</h4>
+                                     <ul className="list-disc list-inside text-neutral-400 text-xs space-y-1">
+                                         {complexityResult.suggestions.map((s: string, i: number) => <li key={i}>{s}</li>)}
+                                     </ul>
+                                </div>
+                             </motion.div>
+                        )}
+                     </>
                  )}
 
                  {/* Chunker Results */}

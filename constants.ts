@@ -105,7 +105,7 @@ export const SERVICES: Service[] = [
   {
     id: '3',
     title: 'Instructional Design',
-    description: 'I design complex, scenario-based learning experiences grounded in cognitive science and adult learning theory.'
+    description: 'I design scenario-based learning experiences grounded in cognitive science—making complex topics accessible without sacrificing accuracy.'
   },
   {
     id: '4',
@@ -117,20 +117,27 @@ export const SERVICES: Service[] = [
 export const TESTIMONIALS = [
   {
     id: '1',
+    text: "Maxwell was a thought leader, engineering processes for efficiency... and approaching all design situations with a learner-centric mentality. He is an educational technology guru.",
+    author: "Tina Gates, M.S., M.S.Ed.",
+    role: "Learning & Development Executive",
+    organization: "MedHub"
+  },
+  {
+    id: '2',
     text: "Highly organized and delivered flexible e-learning on time and on budget.",
     author: "Cristian Opazo",
     role: "Director of EdTech, New York College of Dentistry",
     organization: "NYU"
   },
   {
-    id: '2',
+    id: '3',
     text: "Helped us deliver a global training program online. Responsive and reliable.",
     author: "Eric Schulman",
     role: "Johns Hopkins",
     organization: "Johns Hopkins"
   },
   {
-    id: '3',
+    id: '4',
     text: "Our team benefited greatly from their (TimeTells Innovations LLC) instructional design expertise.",
     author: "Peter Fitzgerald",
     role: "WiseWire",

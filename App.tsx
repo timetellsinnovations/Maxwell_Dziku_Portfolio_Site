@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
+import Approach from './components/Approach';
 import Work from './components/Work';
 import About from './components/About';
 import Testimonials from './components/Testimonials';
@@ -42,6 +43,7 @@ function App() {
       <Navbar />
       <main id="main-content" className="relative z-10">
         <Hero />
+        <Approach />
         <Work />
         <AiPlayground />
         <About />
