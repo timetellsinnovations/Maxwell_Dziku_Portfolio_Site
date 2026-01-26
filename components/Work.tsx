@@ -52,7 +52,7 @@ const Work: React.FC = () => {
               <div className="absolute top-4 right-4 z-20 overflow-hidden">
                  {/* Mobile Fix: Button is always visible on mobile (translate-y-0) and only animates on desktop (md:translate-y-full) */}
                  <span className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest translate-y-0 md:translate-y-full group-hover:translate-y-0 transition-transform duration-300 shadow-xl">
-                   View Case Study <ArrowUpRight size={14} />
+                   {project.cta || "View Project"} <ArrowUpRight size={14} />
                  </span>
               </div>
             </a>

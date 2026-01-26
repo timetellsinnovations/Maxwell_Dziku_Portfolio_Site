@@ -14,19 +14,20 @@ export const PROJECTS: Project[] = [
     title: 'AI Training Coach',
     category: 'SaaS • AI • Roleplay',
     description: 'A conversational AI platform designed to simulate real-world training scenarios. Users interact with AI personas to practice soft skills, objection handling, and leadership communication.',
-    image: 'https://images.unsplash.com/photo-1617791160505-6f00504e3519?q=80&w=1200&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=1200&auto=format&fit=crop',
     year: '2024',
     link: 'https://aitrainingcoach.com/',
-    // videoUrl: '/assets/ai-coach-preview.mp4' // Ready for video implementation
+    cta: 'Launch Platform'
   },
   {
     id: '5',
     title: 'IOL Visual Simulator',
     category: 'Medical Sim • React • Physics',
     description: 'A physics-based visual simulator demonstrating Intraocular Lens effects for patient education. Features real-time optical adjustments and comparison modes.',
-    image: 'https://images.unsplash.com/photo-1589578228447-e1a4e481c6c8?q=80&w=1200&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1464863979621-258859e62245?q=80&w=1200&auto=format&fit=crop',
     year: '2024',
-    link: 'https://iol-visual-simulator.vercel.app'
+    link: 'https://iol-visual-simulator.vercel.app',
+    cta: 'Launch Simulator'
   },
   {
     id: '6',
@@ -35,7 +36,8 @@ export const PROJECTS: Project[] = [
     description: 'A custom-built Learning Management System interface focusing on instructor analytics and student progress tracking. Demonstrates complex dashboard architecture.',
     image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1200&auto=format&fit=crop',
     year: '2024',
-    link: 'https://timetellsinnovations.github.io/eduprime-lms/'
+    link: 'https://timetellsinnovations.github.io/eduprime-lms/',
+    cta: 'View Dashboard'
   },
   {
     id: '2',
@@ -44,7 +46,8 @@ export const PROJECTS: Project[] = [
     description: 'An interactive course module bringing Dr. Fink’s taxonomy to life. Demonstrates clean UI, intuitive navigation, and effective pedagogical structure in a digital format.',
     image: 'https://images.unsplash.com/photo-1518432031352-d6fc5c10da5a?q=80&w=1200&auto=format&fit=crop',
     year: '2023',
-    link: 'https://maxprojectshare.s3.amazonaws.com/taxonomy-of-significant-learning-by-dr-fink-raw-_A0hv-iW/content/index.html#/'
+    link: 'https://maxprojectshare.s3.amazonaws.com/taxonomy-of-significant-learning-by-dr-fink-raw-_A0hv-iW/content/index.html#/',
+    cta: 'Start Module'
   },
   {
     id: '4',
@@ -53,7 +56,8 @@ export const PROJECTS: Project[] = [
     description: 'A collection of high-impact learning solutions delivered for diverse clients. Showcasing the breadth of capabilities from strategic consulting to full-stack app development.',
     image: 'https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?q=80&w=1200&auto=format&fit=crop',
     year: '2022',
-    link: 'https://timetellsinnovations.com/case-studies'
+    link: 'https://timetellsinnovations.com/case-studies',
+    cta: 'View Case Studies'
   }
 ];
 

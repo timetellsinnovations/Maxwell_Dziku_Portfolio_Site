@@ -6,6 +6,7 @@ export interface Project {
   image: string;
   link?: string;
   year: string;
+  cta?: string;
 }
 
 export interface ExperienceItem {
