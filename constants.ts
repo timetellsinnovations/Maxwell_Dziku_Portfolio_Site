@@ -24,7 +24,7 @@ export const PROJECTS: Project[] = [
     title: 'IOL Visual Simulator',
     category: 'Medical Sim • React • Physics',
     description: 'A physics-based visual simulator demonstrating Intraocular Lens effects for patient education. Features real-time optical adjustments and comparison modes.',
-    image: 'https://images.unsplash.com/photo-1576086213369-97a306d36557?q=80&w=1200&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1534125816913-c39618580041?q=80&w=1200&auto=format&fit=crop',
     year: '2024',
     link: 'https://iol-visual-simulator.vercel.app',
     cta: 'Launch Simulator'
