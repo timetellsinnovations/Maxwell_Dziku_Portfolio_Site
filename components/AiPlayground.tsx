@@ -1,11 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import Section from './ui/Section';
 import { GoogleGenAI } from "@google/genai";
-import { Sparkles, ArrowRight, BookOpen, Target, BrainCircuit, Loader2, Languages, Repeat, CheckCircle2, Calculator, TrendingUp, DollarSign, Users, Clock, MessageSquare, AlertTriangle, Lightbulb, Split, Layers, Search, Scale } from 'lucide-react';
+import { Sparkles, ArrowRight, BookOpen, Target, BrainCircuit, Loader2, Languages, Repeat, CheckCircle2, Calculator, TrendingUp, DollarSign, Users, Clock, MessageSquare, AlertTriangle, Lightbulb, Split, Layers, Search, Scale, Eye, Upload, MousePointerClick, XCircle, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AiPlayground: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'objectives' | 'jargon' | 'roi' | 'feedback' | 'chunker' | 'complexity'>('objectives');
+  const [activeTab, setActiveTab] = useState<'objectives' | 'jargon' | 'roi' | 'feedback' | 'chunker' | 'complexity' | 'a11y' | 'walkme'>('objectives');
   
   // Objectives State
   const [topic, setTopic] = useState('');
@@ -45,6 +45,18 @@ const AiPlayground: React.FC = () => {
   const [isChunkerLoading, setIsChunkerLoading] = useState(false);
   const [chunkerError, setChunkerError] = useState('');
 
+  // Accessibility Checker State
+  const [a11yMode, setA11yMode] = useState<'text' | 'image'>('text');
+  const [a11yTextInput, setA11yTextInput] = useState('');
+  const [a11yImage, setA11yImage] = useState<string | null>(null);
+  const [a11yResult, setA11yResult] = useState<any>(null);
+  const [isA11yLoading, setIsA11yLoading] = useState(false);
+  const [a11yError, setA11yError] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // WalkMe Simulator State
+  const [walkMeStep, setWalkMeStep] = useState(0);
+
   // ROI Derived State
   const roiMetrics = useMemo(() => {
     const totalSavings = roiInputs.employees * roiInputs.hourlyWage * roiInputs.hoursSaved;
@@ -52,6 +64,100 @@ const AiPlayground: React.FC = () => {
     const roiPercent = roiInputs.devCost > 0 ? (netBenefit / roiInputs.devCost) * 100 : 0;
     return { totalSavings, netBenefit, roiPercent };
   }, [roiInputs]);
+
+  // --- Helpers ---
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+          let encoded = reader.result as string;
+          // Remove data:image/...;base64, prefix
+          encoded = encoded.split(',')[1]; 
+          resolve(encoded);
+      };
+      reader.onerror = error => reject(error);
+    });
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      try {
+        const base64 = await fileToBase64(file);
+        setA11yImage(base64);
+        setA11yResult(null); // Clear previous results
+      } catch (err) {
+        setA11yError("Failed to process image.");
+      }
+    }
+  };
+
+  // --- Generators ---
+
+  const generateA11yAudit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (a11yMode === 'text' && !a11yTextInput.trim()) return;
+    if (a11yMode === 'image' && !a11yImage) return;
+
+    setIsA11yLoading(true);
+    setA11yError('');
+    setA11yResult(null);
+
+    try {
+        const apiKey = process.env.API_KEY;
+        if (!apiKey) throw new Error("System Error: API Key missing.");
+
+        const ai = new GoogleGenAI({ apiKey });
+        
+        const systemPrompt = `Act as a WCAG 2.1 AA Accessibility Expert. Analyze the provided ${a11yMode === 'image' ? 'screenshot' : 'HTML snippet'}.
+        Identify issues related to: Color Contrast, Alt Text, Semantic Structure, and Focus States.
+        
+        Return ONLY a raw JSON object:
+        {
+          "score": 85, // 0-100
+          "status": "Pass" | "Needs Remediation" | "Critical Fail",
+          "issues": [
+            { "severity": "High" | "Medium" | "Low", "description": "Issue description", "fix": "How to fix it" }
+          ],
+          "summary": "Brief summary of findings."
+        }`;
+
+        let response;
+        if (a11yMode === 'image' && a11yImage) {
+             response = await ai.models.generateContent({
+                model: 'gemini-3-flash-preview',
+                contents: {
+                    parts: [
+                        { inlineData: { mimeType: 'image/png', data: a11yImage } },
+                        { text: systemPrompt }
+                    ]
+                }
+            });
+        } else {
+             response = await ai.models.generateContent({
+                model: 'gemini-3-flash-preview',
+                contents: `${systemPrompt}\n\nInput HTML:\n${a11yTextInput}`
+            });
+        }
+
+        const text = response.text || "{}";
+        const cleanJson = text.replace(/```json/g, '').replace(/```/g, '').trim();
+
+        try {
+            const parsed = JSON.parse(cleanJson);
+            setA11yResult(parsed);
+        } catch (e) {
+            setA11yError("Could not parse audit results.");
+        }
+
+    } catch (err: any) {
+        console.error(err);
+        setA11yError("Analysis failed. Please try again.");
+    } finally {
+        setIsA11yLoading(false);
+    }
+  };
 
   const generateObjectives = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,12 +199,7 @@ const AiPlayground: React.FC = () => {
         }
 
     } catch (err: any) {
-        console.error(err);
-        if (err.message?.includes("429")) {
-            setObjError("Quota exceeded. Please wait 30s.");
-        } else {
-            setObjError("Something went wrong.");
-        }
+        setObjError("Something went wrong.");
     } finally {
         setIsObjLoading(false);
     }
@@ -137,12 +238,7 @@ const AiPlayground: React.FC = () => {
         setJargonResult(response.text || "Could not generate a response.");
 
     } catch (err: any) {
-        console.error(err);
-        if (err.message?.includes("429")) {
-            setJargonError("Quota exceeded. Please wait 30s.");
-        } else {
-            setJargonError("Something went wrong.");
-        }
+        setJargonError("Something went wrong.");
     } finally {
         setIsJargonLoading(false);
     }
@@ -192,12 +288,7 @@ const AiPlayground: React.FC = () => {
           }
 
       } catch (err: any) {
-          console.error(err);
-          if (err.message?.includes("429")) {
-              setComplexityError("Quota exceeded. Please wait 30s.");
-          } else {
-              setComplexityError("Something went wrong.");
-          }
+          setComplexityError("Something went wrong.");
       } finally {
           setIsComplexityLoading(false);
       }
@@ -245,12 +336,7 @@ const AiPlayground: React.FC = () => {
           }
 
       } catch (err: any) {
-          console.error(err);
-          if (err.message?.includes("429")) {
-              setFeedbackError("Quota exceeded. Please wait 30s.");
-          } else {
-              setFeedbackError("Something went wrong.");
-          }
+          setFeedbackError("Something went wrong.");
       } finally {
           setIsFeedbackLoading(false);
       }
@@ -302,12 +388,7 @@ const AiPlayground: React.FC = () => {
           }
 
       } catch (err: any) {
-          console.error(err);
-          if (err.message?.includes("429")) {
-              setChunkerError("Quota exceeded. Please wait 30s.");
-          } else {
-              setChunkerError("Something went wrong.");
-          }
+          setChunkerError("Something went wrong.");
       } finally {
           setIsChunkerLoading(false);
       }
@@ -320,6 +401,17 @@ const AiPlayground: React.FC = () => {
         [name]: parseFloat(value) || 0
     }));
   };
+
+  const tabs = [
+      { id: 'objectives', icon: Target, label: 'ID Generator' },
+      { id: 'complexity', icon: Scale, label: 'Complexity Analyzer' },
+      { id: 'jargon', icon: Languages, label: 'Clarity Engine' },
+      { id: 'a11y', icon: Eye, label: 'Accessibility Audit' },
+      { id: 'walkme', icon: MousePointerClick, label: 'WalkMe Simulator' },
+      { id: 'chunker', icon: Split, label: 'Smart Chunker' },
+      { id: 'roi', icon: Calculator, label: 'ROI Calc' },
+      { id: 'feedback', icon: MessageSquare, label: 'Feedback AI' },
+  ];
 
   return (
     <Section id="ai-playground" className="bg-neutral-900 border-t border-neutral-800">
@@ -335,58 +427,37 @@ const AiPlayground: React.FC = () => {
             </p>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-6 border-b border-neutral-800 mb-8 overflow-x-auto no-scrollbar pb-1">
-            <button 
-                onClick={() => setActiveTab('objectives')}
-                className={`pb-4 text-sm font-bold uppercase tracking-widest transition-colors relative whitespace-nowrap flex items-center gap-2 ${activeTab === 'objectives' ? 'text-lime-400' : 'text-neutral-500 hover:text-white'}`}
-            >
-                <Target size={16} /> ID Generator
-                {activeTab === 'objectives' && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-400" />}
-            </button>
-            <button 
-                onClick={() => setActiveTab('complexity')}
-                className={`pb-4 text-sm font-bold uppercase tracking-widest transition-colors relative whitespace-nowrap flex items-center gap-2 ${activeTab === 'complexity' ? 'text-lime-400' : 'text-neutral-500 hover:text-white'}`}
-            >
-                <Scale size={16} /> Complexity Analyzer
-                {activeTab === 'complexity' && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-400" />}
-            </button>
-            <button 
-                onClick={() => setActiveTab('jargon')}
-                className={`pb-4 text-sm font-bold uppercase tracking-widest transition-colors relative whitespace-nowrap flex items-center gap-2 ${activeTab === 'jargon' ? 'text-lime-400' : 'text-neutral-500 hover:text-white'}`}
-            >
-                <Languages size={16} /> Clarity Engine
-                {activeTab === 'jargon' && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-400" />}
-            </button>
-            <button 
-                onClick={() => setActiveTab('chunker')}
-                className={`pb-4 text-sm font-bold uppercase tracking-widest transition-colors relative whitespace-nowrap flex items-center gap-2 ${activeTab === 'chunker' ? 'text-lime-400' : 'text-neutral-500 hover:text-white'}`}
-            >
-                <Split size={16} /> Smart Chunker
-                {activeTab === 'chunker' && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-400" />}
-            </button>
-            <button 
-                onClick={() => setActiveTab('roi')}
-                className={`pb-4 text-sm font-bold uppercase tracking-widest transition-colors relative whitespace-nowrap flex items-center gap-2 ${activeTab === 'roi' ? 'text-lime-400' : 'text-neutral-500 hover:text-white'}`}
-            >
-                <Calculator size={16} /> ROI Calc
-                {activeTab === 'roi' && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-400" />}
-            </button>
-             <button 
-                onClick={() => setActiveTab('feedback')}
-                className={`pb-4 text-sm font-bold uppercase tracking-widest transition-colors relative whitespace-nowrap flex items-center gap-2 ${activeTab === 'feedback' ? 'text-lime-400' : 'text-neutral-500 hover:text-white'}`}
-            >
-                <MessageSquare size={16} /> Feedback AI
-                {activeTab === 'feedback' && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-400" />}
-            </button>
+        {/* Tabs - Accessible Role */}
+        <div 
+            role="tablist" 
+            aria-label="Interactive Demo Selection"
+            className="flex gap-6 border-b border-neutral-800 mb-8 overflow-x-auto no-scrollbar pb-1"
+        >
+            {tabs.map((tab) => (
+                <button 
+                    key={tab.id}
+                    role="tab"
+                    aria-selected={activeTab === tab.id}
+                    aria-controls={`${tab.id}-panel`}
+                    id={`${tab.id}-tab`}
+                    onClick={() => setActiveTab(tab.id as any)}
+                    className={`pb-4 text-sm font-bold uppercase tracking-widest transition-colors relative whitespace-nowrap flex items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-lime-400 rounded-t ${activeTab === tab.id ? 'text-lime-400' : 'text-neutral-500 hover:text-white'}`}
+                >
+                    <tab.icon size={16} /> {tab.label}
+                    {activeTab === tab.id && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-lime-400" />}
+                </button>
+            ))}
         </div>
 
         <div className="grid md:grid-cols-2 gap-12 items-start min-h-[450px]">
-            {/* Input Side */}
+            {/* Input Side - Accessible Panels */}
             <div className="relative">
             <AnimatePresence mode="wait">
                 {activeTab === 'objectives' && (
                     <motion.div 
+                        role="tabpanel"
+                        id="objectives-panel"
+                        aria-labelledby="objectives-tab"
                         key="obj-input"
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -398,7 +469,9 @@ const AiPlayground: React.FC = () => {
                              <p className="text-neutral-400 text-sm">Enter a topic, and I'll generate measurable objectives using Bloom's Taxonomy. Demonstrates <strong>Prompt Engineering</strong> and <strong>ID Theory</strong>.</p>
                         </div>
                         <form onSubmit={generateObjectives} className="relative">
+                            <label htmlFor="topic-input" className="sr-only">Topic</label>
                             <input 
+                                id="topic-input"
                                 type="text" 
                                 value={topic}
                                 onChange={(e) => setTopic(e.target.value)}
@@ -417,8 +490,122 @@ const AiPlayground: React.FC = () => {
                     </motion.div>
                 )}
 
+                {/* New: Accessibility Audit */}
+                {activeTab === 'a11y' && (
+                    <motion.div 
+                        role="tabpanel"
+                        id="a11y-panel"
+                        aria-labelledby="a11y-tab"
+                        key="a11y-input"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <div className="mb-6">
+                             <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">Accessibility Audit Tool</h3>
+                             <p className="text-neutral-400 text-sm">Upload a screenshot or paste HTML to audit for WCAG compliance. Demonstrates <strong>Inclusive Design</strong> and <strong>Multimodal AI</strong>.</p>
+                        </div>
+                        
+                        <div className="flex gap-4 mb-4">
+                            <button 
+                                onClick={() => { setA11yMode('text'); setA11yImage(null); }}
+                                className={`px-4 py-2 rounded text-xs font-bold uppercase tracking-widest border transition-colors ${a11yMode === 'text' ? 'bg-lime-400 text-black border-lime-400' : 'text-neutral-400 border-neutral-700 hover:border-neutral-500'}`}
+                            >
+                                Paste Code
+                            </button>
+                            <button 
+                                onClick={() => { setA11yMode('image'); setA11yTextInput(''); }}
+                                className={`px-4 py-2 rounded text-xs font-bold uppercase tracking-widest border transition-colors ${a11yMode === 'image' ? 'bg-lime-400 text-black border-lime-400' : 'text-neutral-400 border-neutral-700 hover:border-neutral-500'}`}
+                            >
+                                Upload UI
+                            </button>
+                        </div>
+
+                         <form onSubmit={generateA11yAudit} className="flex flex-col gap-4">
+                            {a11yMode === 'text' ? (
+                                <textarea 
+                                    value={a11yTextInput}
+                                    onChange={(e) => setA11yTextInput(e.target.value)}
+                                    placeholder="<button>Click me</button> (Paste HTML snippet here...)"
+                                    className="w-full h-40 bg-neutral-950 border border-neutral-700 text-white rounded-lg p-4 focus:border-lime-400 focus:outline-none transition-colors resize-none placeholder:text-neutral-600 font-mono text-xs"
+                                    aria-label="HTML Input"
+                                />
+                            ) : (
+                                <div 
+                                    className="w-full h-40 bg-neutral-950 border-2 border-dashed border-neutral-700 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-lime-400 transition-colors"
+                                    onClick={() => fileInputRef.current?.click()}
+                                >
+                                    <input 
+                                        type="file" 
+                                        ref={fileInputRef}
+                                        onChange={handleImageUpload}
+                                        accept="image/*"
+                                        className="hidden" 
+                                        aria-label="Upload Screenshot"
+                                    />
+                                    {a11yImage ? (
+                                        <div className="relative w-full h-full p-2">
+                                            <img src={`data:image/png;base64,${a11yImage}`} alt="Preview" className="w-full h-full object-contain" />
+                                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                                                <p className="text-white text-xs font-bold">Change Image</p>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <Upload className="text-neutral-500 mb-2" />
+                                            <p className="text-neutral-500 text-xs font-bold uppercase">Click to Upload Screenshot</p>
+                                        </>
+                                    )}
+                                </div>
+                            )}
+                            <button 
+                                type="submit" 
+                                disabled={isA11yLoading || (a11yMode === 'text' ? !a11yTextInput : !a11yImage)}
+                                className="self-start bg-lime-400 text-black px-6 py-3 rounded font-bold uppercase text-xs tracking-widest hover:bg-lime-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                            >
+                                {isA11yLoading ? <Loader2 size={16} className="animate-spin" /> : <>Run Audit <Eye size={16} /></>}
+                            </button>
+                        </form>
+                        {a11yError && <p className="text-red-400 text-sm mt-3 flex items-center gap-2"><BrainCircuit size={14}/> {a11yError}</p>}
+                    </motion.div>
+                )}
+
+                {/* New: WalkMe Simulator */}
+                {activeTab === 'walkme' && (
+                    <motion.div 
+                        role="tabpanel"
+                        id="walkme-panel"
+                        aria-labelledby="walkme-tab"
+                        key="walkme-input"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                         <div className="mb-6">
+                             <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">WalkMe Simulator</h3>
+                             <p className="text-neutral-400 text-sm">A fully interactive "Smart Walkthrough" built in React. Demonstrates my ability to create <strong>Digital Adoption</strong> guidance overlays manually or via tools like WalkMe/Pendo.</p>
+                        </div>
+                        <div className="bg-neutral-950 border border-neutral-700 p-6 rounded-lg text-center">
+                            <MousePointerClick size={48} className="mx-auto mb-4 text-lime-400" />
+                            <p className="text-white font-bold mb-2">Interactive Demo Ready</p>
+                            <p className="text-neutral-400 text-xs mb-6">Click the button below to launch the simulation in the preview window.</p>
+                            <button 
+                                onClick={() => setWalkMeStep(1)}
+                                className="bg-lime-400 text-black px-6 py-3 rounded font-bold uppercase text-xs tracking-widest hover:bg-lime-300 transition-colors"
+                            >
+                                {walkMeStep === 0 ? "Start Walkthrough" : "Restart Demo"}
+                            </button>
+                        </div>
+                    </motion.div>
+                )}
+
                  {activeTab === 'complexity' && (
                     <motion.div 
+                        role="tabpanel"
+                        id="complexity-panel"
+                        aria-labelledby="complexity-tab"
                         key="complexity-input"
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -435,6 +622,7 @@ const AiPlayground: React.FC = () => {
                                 onChange={(e) => setComplexityInput(e.target.value)}
                                 placeholder="Paste dense text here..."
                                 className="w-full h-40 bg-neutral-950 border border-neutral-700 text-white rounded-lg p-4 focus:border-lime-400 focus:outline-none transition-colors resize-none placeholder:text-neutral-600"
+                                aria-label="Dense Text"
                             />
                             <button 
                                 type="submit" 
@@ -450,6 +638,9 @@ const AiPlayground: React.FC = () => {
 
                 {activeTab === 'chunker' && (
                     <motion.div 
+                        role="tabpanel"
+                        id="chunker-panel"
+                        aria-labelledby="chunker-tab"
                         key="chunker-input"
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -466,6 +657,7 @@ const AiPlayground: React.FC = () => {
                                 onChange={(e) => setChunkerInput(e.target.value)}
                                 placeholder="Paste a long SOP, product manual, or policy document here..."
                                 className="w-full h-40 bg-neutral-950 border border-neutral-700 text-white rounded-lg p-4 focus:border-lime-400 focus:outline-none transition-colors resize-none placeholder:text-neutral-600"
+                                aria-label="Long Form Content"
                             />
                             <button 
                                 type="submit" 
@@ -481,6 +673,9 @@ const AiPlayground: React.FC = () => {
 
                 {activeTab === 'jargon' && (
                     <motion.div 
+                        role="tabpanel"
+                        id="jargon-panel"
+                        aria-labelledby="jargon-tab"
                         key="jargon-input"
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -497,6 +692,7 @@ const AiPlayground: React.FC = () => {
                                 onChange={(e) => setJargonInput(e.target.value)}
                                 placeholder="Paste text like: 'We need to refactor the monolithic architecture to microservices to reduce technical debt...'"
                                 className="w-full h-40 bg-neutral-950 border border-neutral-700 text-white rounded-lg p-4 focus:border-lime-400 focus:outline-none transition-colors resize-none placeholder:text-neutral-600"
+                                aria-label="Complex Text"
                             />
                             <button 
                                 type="submit" 
@@ -512,6 +708,9 @@ const AiPlayground: React.FC = () => {
 
                 {activeTab === 'roi' && (
                     <motion.div 
+                        role="tabpanel"
+                        id="roi-panel"
+                        aria-labelledby="roi-tab"
                         key="roi-input"
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -569,6 +768,9 @@ const AiPlayground: React.FC = () => {
 
                  {activeTab === 'feedback' && (
                     <motion.div 
+                        role="tabpanel"
+                        id="feedback-panel"
+                        aria-labelledby="feedback-tab"
                         key="feedback-input"
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -585,6 +787,7 @@ const AiPlayground: React.FC = () => {
                                 onChange={(e) => setFeedbackInput(e.target.value)}
                                 placeholder="e.g. 'The simulation was great, but the quiz questions were confusing and I couldn't find the resource link...'"
                                 className="w-full h-40 bg-neutral-950 border border-neutral-700 text-white rounded-lg p-4 focus:border-lime-400 focus:outline-none transition-colors resize-none placeholder:text-neutral-600"
+                                aria-label="Learner Feedback"
                             />
                             <button 
                                 type="submit" 
@@ -638,6 +841,166 @@ const AiPlayground: React.FC = () => {
                             </div>
                         )}
                     </>
+                 )}
+
+                 {/* New: A11y Results */}
+                 {activeTab === 'a11y' && (
+                    <>
+                         {!isA11yLoading && !a11yResult && !a11yError && (
+                            <div className="text-center text-neutral-600">
+                                <Eye size={48} className="mx-auto mb-4 opacity-20" />
+                                <p className="uppercase tracking-widest text-sm">Waiting for code or screenshot...</p>
+                            </div>
+                        )}
+                        {isA11yLoading && (
+                             <div className="space-y-4">
+                                <div className="h-8 bg-neutral-800 rounded w-1/3 animate-pulse"></div>
+                                <div className="h-20 bg-neutral-800 rounded w-full animate-pulse"></div>
+                                <div className="h-40 bg-neutral-800 rounded w-full animate-pulse"></div>
+                            </div>
+                        )}
+                        {a11yResult && (
+                             <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="space-y-6"
+                             >
+                                <div className="flex justify-between items-center bg-neutral-900 p-4 rounded border border-neutral-800">
+                                    <div className={`px-4 py-2 rounded font-bold uppercase tracking-widest text-sm ${
+                                        a11yResult.score >= 90 ? 'bg-lime-400 text-black' : 
+                                        a11yResult.score >= 70 ? 'bg-yellow-500 text-black' : 
+                                        'bg-red-500 text-white'
+                                    }`}>
+                                        {a11yResult.status}
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-xs text-neutral-500 uppercase font-bold">WCAG Score</p>
+                                        <p className="text-3xl font-mono font-bold text-white">
+                                            {a11yResult.score}/100
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <p className="text-neutral-400 text-sm leading-relaxed border-l-2 border-neutral-700 pl-4">
+                                    {a11yResult.summary}
+                                </p>
+
+                                <div>
+                                     <h4 className="text-white font-mono uppercase text-xs tracking-widest mb-3 flex items-center gap-2">
+                                        <AlertTriangle size={14} className="text-neutral-500"/> Detected Issues
+                                     </h4>
+                                     <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                                         {a11yResult.issues.map((issue: any, i: number) => (
+                                             <div key={i} className="bg-neutral-900 p-3 rounded border border-neutral-800">
+                                                 <div className="flex justify-between items-start mb-1">
+                                                     <span className="text-neutral-200 text-sm font-bold">{issue.description}</span>
+                                                     <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded ${
+                                                         issue.severity === 'High' ? 'bg-red-500/20 text-red-400' : 'bg-yellow-500/20 text-yellow-500'
+                                                     }`}>
+                                                         {issue.severity}
+                                                     </span>
+                                                 </div>
+                                                 <p className="text-neutral-500 text-xs mt-2"><strong className="text-lime-400">Fix:</strong> {issue.fix}</p>
+                                             </div>
+                                         ))}
+                                     </div>
+                                </div>
+                             </motion.div>
+                        )}
+                    </>
+                 )}
+
+                 {/* New: WalkMe Simulator Results */}
+                 {activeTab === 'walkme' && (
+                     <div className="relative h-full min-h-[400px] bg-white rounded-lg overflow-hidden flex flex-col">
+                         {walkMeStep === 0 ? (
+                             <div className="flex-1 flex flex-col items-center justify-center text-neutral-400 p-8">
+                                 <MousePointerClick size={48} className="mb-4 opacity-20" />
+                                 <p className="uppercase tracking-widest text-sm text-center text-neutral-500">Preview Area</p>
+                             </div>
+                         ) : (
+                             // Mock Dashboard
+                             <div className="flex-1 bg-neutral-100 p-4 relative text-neutral-800 font-sans">
+                                 {/* Mock Nav */}
+                                 <div className="flex justify-between items-center mb-6 bg-white p-3 rounded shadow-sm">
+                                     <div className="font-bold text-lg text-blue-600">LMS Admin</div>
+                                     <div className="flex gap-4 text-xs text-neutral-500">
+                                         <span>Dashboard</span>
+                                         <span>Users</span>
+                                         <span className="font-bold text-neutral-900">Reports</span>
+                                     </div>
+                                 </div>
+
+                                 {/* Mock Grid */}
+                                 <div className="grid grid-cols-2 gap-4">
+                                     {/* Widget 1 */}
+                                     <div id="wm-widget-1" className="bg-white p-4 rounded shadow-sm h-32 relative">
+                                         <div className="text-xs font-bold text-neutral-400 uppercase mb-2">Active Learners</div>
+                                         <div className="text-3xl font-bold text-neutral-800">1,240</div>
+                                         
+                                         {/* Tooltip Step 1 */}
+                                         {walkMeStep === 1 && (
+                                             <motion.div 
+                                                initial={{ opacity: 0, scale: 0.9 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                className="absolute -right-2 top-8 z-50 w-64 bg-blue-600 text-white p-4 rounded-lg shadow-xl"
+                                             >
+                                                 <div className="absolute -left-2 top-4 w-4 h-4 bg-blue-600 rotate-45"></div>
+                                                 <h5 className="font-bold mb-1 text-sm">Track Engagement</h5>
+                                                 <p className="text-xs mb-3 opacity-90">View real-time active users here.</p>
+                                                 <button onClick={() => setWalkMeStep(2)} className="bg-white text-blue-600 px-3 py-1 rounded text-xs font-bold">Next</button>
+                                             </motion.div>
+                                         )}
+                                     </div>
+
+                                     {/* Widget 2 */}
+                                     <div className="bg-white p-4 rounded shadow-sm h-32">
+                                         <div className="text-xs font-bold text-neutral-400 uppercase mb-2">Completions</div>
+                                         <div className="text-3xl font-bold text-neutral-800">85%</div>
+                                     </div>
+                                 </div>
+
+                                 {/* Bottom Action Area */}
+                                 <div className="mt-4 flex justify-end">
+                                     <button id="wm-button-export" className="bg-blue-600 text-white px-4 py-2 rounded text-sm font-bold relative">
+                                         Export Data
+                                         
+                                         {/* Tooltip Step 2 */}
+                                         {walkMeStep === 2 && (
+                                             <motion.div 
+                                                initial={{ opacity: 0, scale: 0.9 }}
+                                                animate={{ opacity: 1, scale: 1 }}
+                                                className="absolute bottom-full right-0 mb-3 z-50 w-64 bg-blue-600 text-white p-4 rounded-lg shadow-xl text-left"
+                                             >
+                                                 <div className="absolute bottom-[-6px] right-6 w-4 h-4 bg-blue-600 rotate-45"></div>
+                                                 <h5 className="font-bold mb-1 text-sm">Download Reports</h5>
+                                                 <p className="text-xs mb-3 opacity-90">Click here to export your quarterly analytics.</p>
+                                                 <button onClick={() => setWalkMeStep(3)} className="bg-white text-blue-600 px-3 py-1 rounded text-xs font-bold">Finish</button>
+                                             </motion.div>
+                                         )}
+                                     </button>
+                                 </div>
+
+                                 {/* Success Overlay */}
+                                 {walkMeStep === 3 && (
+                                     <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-[100] backdrop-blur-sm">
+                                         <motion.div 
+                                            initial={{ scale: 0.5, opacity: 0 }}
+                                            animate={{ scale: 1, opacity: 1 }}
+                                            className="bg-white p-8 rounded-lg text-center"
+                                         >
+                                             <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                                 <Check size={32} />
+                                             </div>
+                                             <h4 className="font-bold text-xl mb-2">Flow Completed!</h4>
+                                             <p className="text-sm text-neutral-600 mb-6">You've successfully built a guide.</p>
+                                             <button onClick={() => setWalkMeStep(0)} className="text-neutral-400 hover:text-neutral-600 text-xs font-bold uppercase">Restart</button>
+                                         </motion.div>
+                                     </div>
+                                 )}
+                             </div>
+                         )}
+                     </div>
                  )}
 
                   {/* Complexity Results */}

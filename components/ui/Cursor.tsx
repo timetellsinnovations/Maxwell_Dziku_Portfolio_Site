@@ -35,6 +35,7 @@ const Cursor: React.FC = () => {
   return (
     <motion.div
       className="fixed top-0 left-0 w-4 h-4 bg-lime-400 rounded-full pointer-events-none z-[100] mix-blend-difference hidden md:block"
+      aria-hidden="true"
       animate={{
         x: mousePosition.x - 8,
         y: mousePosition.y - 8,

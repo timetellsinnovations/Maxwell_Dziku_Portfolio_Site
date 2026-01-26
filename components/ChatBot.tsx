@@ -102,9 +102,9 @@ const ChatBot: React.FC = () => {
       <button
         onClick={() => { setIsOpen(true); setIsMinimized(false); }}
         className={`fixed bottom-6 right-6 z-[999] w-14 h-14 bg-lime-400 rounded-full flex items-center justify-center shadow-xl text-black transition-transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-lime-400/50 ${isOpen && !isMinimized ? 'hidden' : 'flex'}`}
-        aria-label="Open AI Chat"
+        aria-label="Open AI Chat Assistant"
       >
-        <MessageCircle size={28} />
+        <MessageCircle size={28} aria-hidden="true" />
       </button>
 
       <AnimatePresence>
@@ -114,6 +114,8 @@ const ChatBot: React.FC = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 50, scale: 0.9 }}
             className="fixed bottom-6 right-6 z-[999] w-[90vw] md:w-[400px] h-[550px] bg-neutral-900 border border-neutral-700 rounded-xl shadow-2xl flex flex-col overflow-hidden"
+            role="dialog"
+            aria-label="MaxAI Assistant Chat Window"
           >
             {/* Header */}
             <div className="bg-neutral-950 p-4 border-b border-neutral-800 flex justify-between items-center">
@@ -128,17 +130,21 @@ const ChatBot: React.FC = () => {
                 </div>
               </div>
               <div className="flex gap-2">
-                <button onClick={() => setIsMinimized(true)} className="text-neutral-400 hover:text-white p-1"><Minimize2 size={16} /></button>
-                <button onClick={() => setIsOpen(false)} className="text-neutral-400 hover:text-white p-1"><X size={16} /></button>
+                <button onClick={() => setIsMinimized(true)} className="text-neutral-400 hover:text-white p-1" aria-label="Minimize Chat"><Minimize2 size={16} /></button>
+                <button onClick={() => setIsOpen(false)} className="text-neutral-400 hover:text-white p-1" aria-label="Close Chat"><X size={16} /></button>
               </div>
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-neutral-900/50">
+            <div 
+                className="flex-1 overflow-y-auto p-4 space-y-4 bg-neutral-900/50"
+                aria-live="polite"
+                aria-relevant="additions"
+            >
               {messages.map((msg, idx) => (
                 <div key={idx} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${msg.role === 'user' ? 'bg-neutral-700' : msg.isError ? 'bg-red-500' : 'bg-lime-400 text-black'}`}>
-                    {msg.role === 'user' ? <User size={16} /> : msg.isError ? <AlertCircle size={16} /> : <Bot size={16} />}
+                    {msg.role === 'user' ? <User size={16} aria-hidden="true" /> : msg.isError ? <AlertCircle size={16} aria-hidden="true" /> : <Bot size={16} aria-hidden="true" />}
                   </div>
                   <div className={`max-w-[80%] p-3 rounded-2xl text-sm leading-relaxed ${
                       msg.role === 'user' 
@@ -177,9 +183,10 @@ const ChatBot: React.FC = () => {
                   onChange={(e) => setInputValue(e.target.value)}
                   placeholder="Ask about my experience..."
                   className="w-full bg-neutral-900 text-white rounded-full py-3 pl-4 pr-12 text-sm border border-neutral-800 focus:border-lime-400 focus:outline-none transition-colors"
+                  aria-label="Message Input"
                 />
-                <button type="submit" disabled={!inputValue.trim() || isLoading} className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-lime-400 text-black rounded-full disabled:opacity-50 hover:bg-lime-300 transition-colors">
-                  <Send size={16} />
+                <button type="submit" disabled={!inputValue.trim() || isLoading} className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-lime-400 text-black rounded-full disabled:opacity-50 hover:bg-lime-300 transition-colors" aria-label="Send Message">
+                  <Send size={16} aria-hidden="true" />
                 </button>
               </form>
             </div>

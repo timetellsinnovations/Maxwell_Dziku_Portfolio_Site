@@ -112,7 +112,7 @@ const Navbar: React.FC = () => {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
-            <nav className={`flex gap-8 items-center ${!isScrolled && 'mix-blend-difference'}`}>
+            <nav className={`flex gap-8 items-center ${!isScrolled && 'mix-blend-difference'}`} aria-label="Main navigation">
               {NAV_LINKS.map((link) => {
                 const isActive = activeSection === link.href.substring(1);
                 return (
@@ -133,8 +133,9 @@ const Navbar: React.FC = () => {
               target="_blank" 
               rel="noopener noreferrer"
               className={`px-5 py-2 text-xs font-bold uppercase tracking-widest border border-white/30 hover:bg-lime-400 hover:border-lime-400 hover:text-black transition-all flex items-center gap-2 focus-visible:ring-2 focus-visible:ring-lime-400 focus-visible:outline-none ${!isScrolled && 'mix-blend-difference'}`}
+              aria-label="View Resume (opens in new tab)"
             >
-              <FileText size={14} /> Resume
+              <FileText size={14} aria-hidden="true" /> Resume
             </a>
           </div>
 
@@ -143,8 +144,9 @@ const Navbar: React.FC = () => {
             className={`md:hidden p-2 focus-visible:ring-2 focus-visible:ring-lime-400 focus-visible:outline-none rounded hover:text-lime-400 transition-colors ${!isScrolled && 'mix-blend-difference'}`}
             onClick={() => setIsOpen(true)}
             aria-label="Open Menu"
+            aria-expanded={isOpen}
           >
-            <Menu size={28} />
+            <Menu size={28} aria-hidden="true" />
           </button>
         </div>
       </header>
@@ -164,9 +166,9 @@ const Navbar: React.FC = () => {
               onClick={() => setIsOpen(false)}
               aria-label="Close Menu"
             >
-              <X size={32} />
+              <X size={32} aria-hidden="true" />
             </button>
-            <nav className="flex flex-col gap-8 text-center items-center">
+            <nav className="flex flex-col gap-8 text-center items-center" aria-label="Mobile navigation">
               {NAV_LINKS.map((link) => (
                 <motion.a 
                   key={link.name} 
